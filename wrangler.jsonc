@@ -5,5 +5,10 @@
   "assets": {
     "directory": "./site",
     "not_found_handling": "404-page"
-  }
+  },
+  "previews": {},
+  "routes": [
+    { "pattern": "cosmogonic.space", "custom_domain": true },
+    { "pattern": "www.cosmogonic.space", "custom_domain": true }
+  ]
 }
