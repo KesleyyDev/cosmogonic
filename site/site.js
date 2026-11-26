@@ -1,7 +1,7 @@
 /* ---------- Contato da empresa: trocar aqui quando o número e o e-mail existirem ----------
    whatsapp: só dígitos com DDI e DDD, ex.: '5515999999999'. Vazio = o WhatsApp abre para a pessoa escolher o contato.
-   email: ex.: 'contato@cosmogonicai.com'. Vazio = aparece "a definir". */
-const CONFIG={whatsapp:'',email:''};
+   email: ex.: 'contato@cosmogonic.space'. Vazio = aparece "a definir". */
+const CONFIG={whatsapp:'5515997229580',email:'contato@cosmogonic.space'};
 
 {
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -61,7 +61,9 @@ const M={
   chegada:n=>`Você veio do site <b>${n}</b>. Ele foi feito por nós.`,
   tbd:'a definir',zapTbd:'WhatsApp da empresa',emailTbd:'e-mail da empresa',
   serv:{site:'site',sistema:'sistema',automacao:'automação',ia:'IA no atendimento',marketing:'marketing',consultoria:'consultoria','nao-sei':'ainda não sei'},
-  title:'Cosmogonic AI · sites, sistemas e automação para empresas'},
+  title:'Cosmogonic AI · sites, sistemas e automação para empresas',
+  desc:'Estúdio de Sorocaba (SP) que faz site, sistema, automação com IA, marketing e consultoria para pequenas e médias empresas. Atendemos em português e inglês.',
+  p1:'Projeto 01',p2:'Projeto 02'},
  en:{prep:'Preparing your message…',falta1:'One field is missing: ',falta2:'Two fields are missing: ',e:' and ',fNome:'your name',fCtx:'how it works today',
   pronto:'Message ready. Check the text below.',copiado:'Text copied. Paste it into WhatsApp or an email.',
   semCopia:'Couldn’t copy automatically. Select the message text and copy it by hand.',
@@ -69,7 +71,9 @@ const M={
   chegada:n=>`You came from <b>${n}</b>. We built that site.`,
   tbd:'coming soon',zapTbd:'Company WhatsApp',emailTbd:'Company email',
   serv:{site:'website',sistema:'system',automacao:'automation',ia:'AI for customer service',marketing:'marketing',consultoria:'consulting','nao-sei':'not sure yet'},
-  title:'Cosmogonic AI · websites, systems and automation for businesses'}
+  title:'Cosmogonic AI · websites, systems and automation for businesses',
+  desc:'Sorocaba (Brazil) studio building websites, systems, AI automation, marketing and consulting for small and mid-sized businesses. We work in Portuguese and English.',
+  p1:'Project 01',p2:'Project 02'}
 };
 
 /* ---------- idioma ---------- */
@@ -85,6 +89,8 @@ function setLang(l,save){
  $$('[data-i-aria]').forEach(e=>{const k=e.dataset.iAria,v=en?EN[k]:PTA[k];if(v!=null)e.setAttribute('aria-label',v)});
  $$('[data-i-ph]').forEach(e=>{const k=e.dataset.iPh,v=en?EN[k]:PTP[k];if(v!=null)e.setAttribute('placeholder',v)});
  document.documentElement.lang=en?'en':'pt-BR';document.title=M[l].title;
+ const md=document.querySelector('meta[name="description"]');if(md)md.content=M[l].desc;
+ const h3=$$('.obra h3');if(h3[0])h3[0].textContent=M[l].p1;if(h3[1])h3[1].textContent=M[l].p2;
  $$('.idioma button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.l===l)));
  contatos();chegada();if(montada)montar();$('#aviso').textContent='';$('#aviso2').textContent='';
  if(save)try{localStorage.setItem('cg-lang',l)}catch(e){}

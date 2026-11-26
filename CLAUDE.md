@@ -2,7 +2,7 @@
 
 ## O que é
 Site da Cosmogonic AI, empresa digital B2B de Kesley Doles (Sorocaba/SP). Faz sites, sistemas, automações com IA, marketing e consultoria, e quer vender também para fora do Brasil.
-- Domínio planejado: cosmogonicai.com
+- Domínio: cosmogonic.space
 - Contato: kesleyydev@gmail.com · WhatsApp +55 (15) 99722-9580
 - Idiomas: PT (padrão) e EN, com troca no header
 

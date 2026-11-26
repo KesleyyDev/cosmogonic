@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Delegado, com o pedido de "o mais leve possível": **HTML, CSS e JS estáticos, sem framework e sem build.** As peças prontas (`fundo-estrela.js`, `abertura.js`, `header.html`) já são JS puro e entram direto. O site pode ser hospedado em qualquer host estático. O domínio planejado é cosmogonicai.com, e o host ainda não foi escolhido.
+Delegado, com o pedido de "o mais leve possível": **HTML, CSS e JS estáticos, sem framework e sem build.** As peças prontas (`fundo-estrela.js`, `abertura.js`, `header.html`) já são JS puro e entram direto. O site pode ser hospedado em qualquer host estático. O domínio é cosmogonic.space, servido por um Worker da Cloudflare.
 
 ## Users
 
