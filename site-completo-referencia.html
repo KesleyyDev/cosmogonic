@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmogonic AI</title>
+<meta name="description" content="Sites, sistemas, automação e IA para empresas. Do caos ao cosmos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Sora:wght@300;400;500;600&display=swap">
+<style>
+/* VOICE occasion: uma cosmogonia contada com calma, épica e precisa
+   IDEA o site é a linha do tempo do nascimento de uma estrela: rolar é passar o tempo cósmico
+   PICTURE canvas fixo: nebulosa → colapso → protoestrela com disco e jatos → ignição → estrela
+   COLOUR noite #0B0D12, creme #F2EDE3, âmbar #E8A33D; nebulosa ardósia #2A3550 como apoio
+   TYPE Fraunces (títulos) + Sora (texto e interface)
+   LAYOUT laptop: texto à esquerda, estrela à direita, relógio cósmico na borda; celular: estrela no alto, texto embaixo */
+:root{color-scheme:dark;--bg:#0B0D12;--bg2:#151923;--ink:#F2EDE3;--mute:#B3AEA4;--amber:#E8A33D;--amber2:#F2C46D;--slate:#2A3550;--line:rgba(242,237,227,.14);--err:#F08A6B}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Sora,"Segoe UI",system-ui,sans-serif;overflow-x:clip}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;opacity:0;transition:opacity 1.2s ease}
+#sky.on{opacity:1}
+a{color:var(--amber2)}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:16px;top:-60px;background:var(--amber);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:20;font-weight:600}
+.skip:focus{top:12px}
+header{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:14px max(4vw,16px);background:linear-gradient(var(--bg) 40%,rgba(11,13,18,0))}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin-right:auto}
+.brand .bw{position:relative;display:block;height:44px;width:205px;transition:width .55s cubic-bezier(.65,0,.25,1) .1s}
+.brand .word{position:absolute;left:0;top:50%;height:40px;width:auto;transform:translateY(-50%);overflow:visible;color:var(--ink)}
+.brand .word .l{transform-box:fill-box;transform-origin:center;transition:transform .55s cubic-bezier(.65,0,.25,1) .12s,opacity .45s ease-out .18s}
+.brand .word .c0{transition:opacity .3s ease .15s}
+.brand .logo{position:absolute;left:0;top:0;height:44px;width:auto;display:block;opacity:0;transform:scale(.35);transform-origin:9px 55%;transition:opacity .15s ease,transform .25s ease}
+.brand.compact .bw{width:49px;transition-delay:0s}
+.brand.compact .word .l{transform:translateX(var(--dx)) scale(.3);opacity:0;transition:transform .55s cubic-bezier(.65,0,.25,1),opacity .3s ease-in}
+.brand.compact .word .c0{transform:none;opacity:0;transition:opacity .25s ease .25s}
+.brand.compact .logo{opacity:1;transform:none;transition:opacity .35s ease .28s,transform .55s cubic-bezier(.2,.9,.25,1.15) .22s}
+@media(max-width:760px){.brand .bw{height:30px;width:154px}.brand .word{height:30px}.brand .logo{height:30px;transform-origin:7px 55%}.brand.compact .bw{width:34px}}
+@media(prefers-reduced-motion:reduce){.brand .bw,.brand .word .l,.brand .logo{transition:none!important}}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav a{color:var(--mute);text-decoration:none;font-size:14px;padding:10px 12px;border-radius:8px;min-height:44px;display:inline-flex;align-items:center}
+nav a:hover,nav a.here{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{font:500 12px Sora,sans-serif;background:none;border:0;color:var(--mute);padding:8px 12px;border-radius:999px;cursor:pointer;min-height:36px}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.btn{display:inline-flex;align-items:center;gap:10px;font:500 15px Sora,sans-serif;min-height:48px;padding:12px 22px;border-radius:999px;text-decoration:none;border:1px solid var(--amber);background:var(--amber);color:var(--bg);cursor:pointer}
+.btn:hover{background:var(--amber2);color:var(--bg)}
+.btn.ghost{background:none;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink);color:var(--ink)}
+main{position:relative;z-index:1}
+.stage{min-height:100svh;display:flex;align-items:center;padding:120px max(5vw,16px) 80px;max-width:1360px;margin:0 auto}
+.col{width:min(560px,100%)}
+.t{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--amber2);margin:0 0 18px}
+.t::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(232,163,61,.18)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(46px,7vw,88px);font-variation-settings:'opsz' 144}
+h2{font-size:clamp(34px,4.4vw,52px)}
+h3{font-size:24px}
+.lead{font-size:clamp(17px,1.5vw,20px);color:var(--mute);margin:22px 0 32px;max-width:34em}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.meta{margin-top:40px;font-size:13px;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+.chips span{border:1px dashed rgba(242,237,227,.3);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--mute)}
+.list{list-style:none;margin:30px 0 0;padding:0;border-top:1px solid var(--line)}
+.list li{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:8px 24px;padding:18px 0;border-bottom:1px solid var(--line)}
+.list h3{display:flex;align-items:center;gap:10px}
+.list h3 svg{flex:none}
+.list p{margin:0;color:var(--mute);font-size:15px}
+.steps{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:22px}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px}
+.steps .when{grid-row:span 2;font:italic 400 15px Fraunces,Georgia,serif;color:var(--amber2);white-space:nowrap;padding-top:6px;min-width:6.5em}
+.steps p{margin:0;color:var(--mute);font-size:15px}
+.founder{margin-top:30px;padding:22px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:6px}
+.founder b{font:400 26px Fraunces,Georgia,serif}
+.founder span{color:var(--mute);font-size:15px}
+form{display:grid;gap:16px;margin-top:28px;padding:24px;border:1px solid var(--line);border-radius:16px;background:rgba(21,25,35,.88)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+label{display:grid;gap:6px;font-size:14px;color:var(--mute)}
+input,select,textarea{font:16px Sora,sans-serif;color:var(--ink);background:var(--bg);border:1px solid rgba(242,237,227,.28);border-radius:10px;padding:12px 14px;min-height:48px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:var(--amber);outline-offset:1px}
+[aria-invalid=true]{border-color:var(--err)}
+.msg{font-size:14px;margin:0;min-height:1.4em}
+.msg.err{color:var(--err)}
+.done{display:none;gap:12px;padding:18px;border-radius:12px;background:rgba(232,163,61,.1);border:1px solid rgba(232,163,61,.4)}
+.done.on{display:grid}
+.done p{margin:0}
+.direct{margin-top:22px;display:grid;gap:4px;font-size:15px;color:var(--mute)}
+.direct a{font-size:17px}
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:28px max(5vw,16px);display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;font-size:14px;color:var(--mute);background:var(--bg)}
+.clock{position:fixed;right:max(2vw,16px);top:50%;transform:translateY(-50%);z-index:5;display:none;list-style:none;margin:0;padding:0;gap:14px}
+.clock a{display:flex;align-items:center;justify-content:flex-end;gap:10px;color:var(--mute);text-decoration:none;font-size:12px;min-height:28px}
+.clock a span{opacity:0;transition:opacity .3s}
+.clock a:hover span,.clock a.here span{opacity:1}
+.clock a::after{content:"";width:8px;height:8px;border-radius:50%;border:1px solid var(--mute)}
+.clock a.here{color:var(--ink)}
+.clock a.here::after{background:var(--amber);border-color:var(--amber)}
+.bar{position:fixed;left:0;top:0;height:2px;background:var(--amber);z-index:11;width:0}
+@media(min-width:1000px){.clock{display:grid}}
+@media(max-width:760px){
+header{padding:10px 16px}
+nav{display:none}
+.stage{align-items:flex-end;padding:46svh 16px 56px}
+.stage>.col{background:linear-gradient(rgba(11,13,18,0),var(--bg) 70px);padding-top:56px}
+#hero.stage{padding-top:50svh}
+.list li{grid-template-columns:minmax(0,1fr)}
+.two{grid-template-columns:minmax(0,1fr)}
+form{padding:18px}
+}
+#intro{position:fixed;inset:0;z-index:50;background:#0B0D12;transition:opacity .6s ease}
+#intro canvas{position:absolute;inset:0;width:100%;height:100%}
+.replay{background:none;border:0;color:var(--mute);font:14px Sora,sans-serif;cursor:pointer;text-decoration:underline;padding:8px 0;min-height:44px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#sky{transition:none}}
+</style>
+</head>
+<body>
+<div id="intro" hidden><canvas aria-hidden="true"></canvas></div>
+<a class="skip" href="#main" data-i="skip">Pular para o conteúdo</a>
+<div class="bar" id="bar" aria-hidden="true"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header>
+<a class="brand" href="#hero" aria-label="Cosmogonic AI, início"><span class="bw"><svg class="word" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="14 36 1128 220" fill="currentColor" fill-rule="evenodd"><g class="l c0" style="--dx:-0.5px"><path d="M77.0 88.6 L70.3 88.6 L64.5 89.2 L59.3 90.2 L55.7 91.2 L48.9 94.1 L47.0 95.1 L39.3 100.8 L33.4 106.8 L30.1 111.4 L27.0 116.5 L24.2 122.6 L22.2 129.1 L21.0 134.0 L20.3 138.7 L20.0 142.6 L20.1 151.8 L21.3 159.4 L23.2 166.2 L25.0 171.5 L28.0 177.9 L31.1 183.3 L33.4 186.3 L36.9 190.2 L40.9 193.9 L44.3 196.4 L49.6 199.5 L54.5 201.5 L58.4 202.6 L63.6 203.6 L71.8 204.0 L76.3 203.6 L81.6 202.7 L85.2 201.7 L88.1 200.7 L91.9 198.6 L99.1 193.3 L103.5 188.5 L106.3 184.3 L108.9 179.8 L111.5 174.2 L112.9 170.1 L112.8 169.2 L112.1 168.7 L110.5 168.6 L109.6 168.9 L106.7 174.0 L103.6 178.1 L101.8 180.0 L99.0 182.2 L96.1 183.9 L92.5 185.7 L88.9 186.8 L82.7 187.8 L78.7 187.8 L71.2 186.6 L65.9 184.7 L62.2 182.6 L58.3 179.3 L55.0 175.6 L52.1 171.2 L49.0 165.5 L47.0 160.0 L45.8 155.1 L45.0 150.4 L44.5 144.7 L44.3 135.1 L45.0 127.4 L46.8 118.5 L49.1 111.7 L53.0 104.7 L55.8 101.2 L57.9 99.2 L60.7 97.0 L63.1 95.6 L64.8 94.9 L67.8 94.0 L72.0 93.6 L75.6 93.8 L79.7 95.1 L82.3 96.8 L84.5 98.7 L86.4 100.9 L88.4 104.1 L90.7 108.8 L92.7 115.3 L93.8 120.2 L94.4 120.9 L94.9 121.2 L96.5 121.3 L100.3 120.6 L103.5 119.5 L105.7 118.4 L109.3 115.9 L110.7 113.8 L111.1 112.0 L111.1 110.0 L110.6 107.9 L109.5 105.4 L107.2 101.9 L104.7 99.0 L100.2 95.3 L98.3 94.1 L94.4 92.3 L88.0 90.2 L83.1 89.2Z "/></g><g class="l" style="--dx:-112.2px"><path d="M175.8 88.5 L169.7 89.0 L163.8 90.1 L157.9 92.0 L153.4 94.0 L149.6 96.0 L145.0 99.3 L141.5 102.3 L138.1 105.9 L135.4 109.4 L132.2 114.1 L129.2 119.5 L128.0 122.7 L126.2 129.6 L125.2 134.8 L124.3 142.5 L124.3 149.5 L125.2 157.4 L126.1 162.0 L127.5 167.2 L129.2 172.1 L132.2 178.2 L135.1 183.0 L138.0 186.8 L140.5 189.5 L145.1 193.4 L149.8 196.6 L153.1 198.4 L157.8 200.6 L161.4 201.8 L169.6 203.6 L175.7 204.1 L179.7 204.1 L185.2 203.7 L192.1 202.5 L195.7 201.6 L198.8 200.4 L203.3 198.3 L209.7 194.5 L214.5 190.6 L217.0 188.0 L223.6 179.1 L226.6 173.6 L228.6 168.5 L229.6 165.2 L230.7 159.7 L231.6 153.4 L232.0 146.8 L231.6 138.7 L230.7 132.3 L229.7 127.1 L228.5 123.6 L226.5 118.7 L223.7 113.3 L220.4 108.3 L217.0 104.0 L213.9 101.0 L209.4 97.4 L205.2 94.8 L201.8 93.2 L197.3 91.3 L193.1 90.1 L187.6 89.0 L182.8 88.5Z  M175.9 93.6 L182.4 94.0 L186.0 95.0 L187.9 96.0 L191.3 98.2 L193.7 100.4 L197.6 105.4 L198.9 107.5 L200.9 111.7 L202.7 116.3 L203.9 120.5 L205.7 128.4 L207.0 140.6 L207.1 147.2 L206.9 153.8 L205.9 163.3 L204.9 168.9 L202.7 177.0 L200.7 182.2 L198.8 185.7 L196.9 188.6 L194.6 191.7 L191.4 194.6 L188.3 196.6 L185.7 197.7 L182.4 198.6 L179.6 199.0 L176.6 199.0 L174.1 198.6 L170.7 197.7 L167.9 196.4 L165.6 194.9 L162.9 192.5 L161.0 190.6 L158.9 187.9 L155.9 182.4 L154.0 177.9 L152.0 171.7 L150.9 166.5 L150.0 161.5 L149.0 149.9 L149.0 142.9 L149.5 134.5 L150.0 129.3 L150.9 124.0 L151.8 119.8 L154.9 111.0 L156.3 107.9 L158.3 104.8 L160.9 101.5 L165.7 97.1 L169.7 94.9 L172.7 94.0Z "/></g><g class="l" style="--dx:-218.2px"><path d="M307.9 91.3 L298.8 89.3 L294.0 88.8 L287.5 88.5 L279.6 88.8 L273.1 90.0 L269.2 91.2 L266.4 92.3 L261.2 95.1 L256.0 99.5 L254.6 101.3 L253.1 103.7 L251.3 107.2 L250.1 110.4 L249.2 115.0 L249.0 118.9 L249.2 122.5 L250.2 127.4 L252.0 132.0 L254.0 135.5 L257.3 139.8 L261.7 143.8 L265.8 146.7 L273.2 151.4 L290.2 160.9 L293.1 162.8 L295.9 165.0 L298.7 168.2 L300.8 172.0 L302.1 176.1 L302.3 178.0 L302.3 182.0 L301.6 186.4 L300.9 188.5 L299.5 191.2 L297.0 194.2 L293.7 196.6 L289.7 198.3 L287.6 198.7 L284.4 199.1 L278.9 198.7 L275.0 197.8 L272.0 196.8 L268.3 194.6 L265.5 192.5 L261.3 188.3 L257.1 182.7 L255.1 179.6 L252.0 173.5 L249.6 167.5 L248.8 167.0 L247.6 167.0 L246.9 167.5 L246.8 169.2 L247.5 175.9 L247.6 182.8 L248.5 195.8 L248.8 196.7 L249.7 197.4 L254.3 199.4 L262.0 201.7 L272.9 203.6 L278.4 203.9 L284.0 204.0 L291.1 203.4 L296.1 202.6 L299.1 201.6 L303.9 199.5 L307.4 197.5 L310.4 195.2 L313.6 191.9 L315.7 189.4 L317.6 186.3 L319.4 182.3 L320.6 178.5 L321.4 173.2 L321.4 168.5 L320.6 163.2 L319.6 159.9 L318.4 157.1 L316.3 153.3 L313.1 149.3 L311.2 147.4 L306.0 143.2 L302.6 141.0 L289.5 133.9 L280.4 128.5 L274.0 123.9 L272.3 122.4 L270.0 119.3 L268.0 114.8 L267.5 112.1 L267.5 107.2 L268.1 104.1 L268.9 102.2 L269.9 100.6 L272.5 97.7 L274.8 96.0 L276.4 95.2 L279.6 94.0 L284.4 93.5 L289.9 93.8 L293.5 94.9 L296.3 96.1 L298.9 97.8 L302.6 101.0 L306.2 105.1 L308.6 108.8 L311.6 114.9 L312.9 119.4 L313.8 120.0 L315.3 119.8 L315.7 119.3 L315.8 118.4 L315.4 95.2 L315.0 94.4 L312.0 92.8Z "/></g><g class="l" style="--dx:-353.4px"><path d="M334.1 98.9 L333.9 100.1 L334.4 101.2 L338.9 103.8 L340.6 105.4 L341.6 107.0 L342.9 110.1 L343.8 116.1 L344.0 150.0 L343.8 152.0 L343.8 184.3 L342.8 189.9 L341.4 193.6 L340.5 195.3 L339.2 196.7 L337.4 198.1 L335.0 199.4 L334.6 200.5 L334.8 201.1 L335.2 201.5 L336.1 201.8 L375.4 201.5 L375.8 201.1 L375.9 200.2 L375.6 199.3 L372.0 197.5 L369.9 195.4 L369.0 194.1 L368.0 191.2 L367.0 184.9 L366.8 111.3 L367.5 109.9 L369.7 108.0 L373.6 105.2 L376.3 103.8 L380.5 102.0 L383.5 101.0 L389.2 100.3 L393.0 100.7 L395.8 101.3 L399.4 103.0 L401.9 104.9 L403.9 107.1 L405.7 110.4 L406.8 113.2 L407.6 117.6 L408.1 125.0 L408.1 154.5 L408.0 156.1 L408.1 174.3 L407.8 185.5 L406.7 191.0 L405.4 194.2 L404.6 195.5 L402.5 197.6 L399.4 199.6 L399.0 200.8 L399.5 201.5 L400.7 201.8 L402.3 201.6 L438.6 201.6 L439.5 201.5 L439.9 201.1 L439.9 200.1 L439.6 199.3 L437.3 198.3 L435.8 197.1 L434.3 195.4 L433.3 193.8 L432.0 190.0 L431.3 185.7 L431.1 181.4 L431.1 134.7 L431.3 132.8 L431.1 122.2 L430.4 114.2 L429.9 111.4 L430.4 110.3 L432.5 108.3 L437.2 105.1 L439.2 104.1 L446.9 101.1 L452.6 100.5 L455.3 100.5 L459.3 101.2 L463.3 103.0 L466.4 105.1 L468.0 107.1 L469.7 110.0 L470.8 112.9 L471.8 117.2 L472.5 124.9 L472.5 176.9 L472.3 184.2 L471.7 188.6 L470.7 192.5 L469.7 194.4 L468.5 195.9 L466.1 198.2 L464.0 199.5 L463.7 200.3 L463.9 201.2 L464.9 201.8 L504.1 201.6 L504.6 201.2 L504.8 200.3 L504.4 199.5 L500.9 197.6 L499.2 196.0 L498.2 194.5 L496.8 191.3 L495.8 186.8 L495.5 182.6 L495.3 175.3 L495.4 126.1 L494.4 113.5 L492.6 106.6 L490.3 101.5 L487.3 97.4 L484.9 95.1 L482.1 93.1 L477.6 91.0 L471.4 89.2 L468.2 88.8 L462.5 88.8 L456.5 89.4 L450.2 91.2 L447.9 92.1 L441.5 95.2 L438.4 97.3 L433.6 101.1 L429.6 105.4 L428.8 105.9 L428.2 105.8 L427.8 105.4 L426.5 102.6 L424.3 99.2 L422.2 96.7 L419.2 94.1 L414.9 91.6 L411.2 90.2 L407.3 89.2 L403.8 88.8 L398.8 88.8 L393.3 89.3 L389.7 90.2 L384.2 92.2 L377.6 95.7 L371.1 100.8 L367.5 104.2 L366.8 103.8 L366.6 102.9 L366.8 90.0 L366.6 89.4 L365.8 89.0 L362.3 89.3 L353.3 92.5 L335.0 98.1Z "/></g><g class="l" style="--dx:-504.2px"><path d="M561.8 89.0 L556.6 90.0 L551.8 91.3 L547.0 93.3 L540.1 97.0 L535.3 100.6 L530.6 105.3 L529.1 107.0 L526.0 111.4 L523.3 116.0 L520.1 123.0 L519.2 125.6 L518.0 130.4 L516.5 142.5 L516.5 151.1 L517.2 157.2 L519.3 166.6 L521.2 171.8 L524.2 178.2 L526.5 182.0 L529.3 185.8 L532.4 189.2 L537.0 193.4 L540.1 195.6 L545.2 198.5 L552.3 201.5 L556.5 202.6 L562.4 203.7 L568.2 204.1 L575.8 203.9 L579.3 203.6 L584.8 202.5 L590.7 200.6 L594.9 198.7 L599.0 196.4 L602.3 194.0 L606.6 190.5 L610.7 186.2 L613.6 182.4 L615.6 179.3 L618.6 173.5 L620.5 168.3 L622.5 160.8 L623.4 155.8 L623.8 152.0 L623.9 145.0 L623.4 136.3 L622.6 131.0 L621.4 126.4 L619.6 120.8 L617.6 116.3 L614.5 110.6 L612.3 107.5 L610.0 104.8 L606.6 101.4 L601.1 97.0 L596.3 94.1 L589.1 91.3 L585.3 90.1 L580.7 89.2 L574.9 88.6 L568.6 88.5Z  M568.6 93.6 L571.9 93.6 L575.0 94.0 L578.3 95.0 L580.8 96.2 L583.4 98.0 L586.1 100.4 L589.8 105.2 L591.8 108.7 L593.7 112.9 L594.8 116.1 L596.7 123.3 L597.9 130.2 L598.8 142.5 L598.6 154.4 L597.4 165.6 L595.7 173.6 L593.9 179.2 L590.9 185.6 L588.8 189.1 L586.6 191.8 L584.0 194.4 L580.6 196.6 L578.0 197.7 L575.1 198.6 L572.2 199.0 L568.9 198.9 L566.7 198.7 L563.6 198.0 L560.2 196.6 L556.3 193.8 L553.8 191.2 L551.1 187.7 L548.2 182.5 L545.9 176.5 L544.1 170.2 L543.0 165.0 L542.0 158.1 L541.3 147.0 L541.6 135.5 L542.9 125.0 L545.0 116.2 L547.0 111.1 L548.7 107.8 L553.3 101.0 L557.7 97.2 L561.8 95.0 L565.4 94.0Z "/></g><g class="l" style="--dx:-620.2px"><path d="M736.7 78.0 L732.5 78.0 L729.6 78.4 L726.3 79.3 L721.2 81.3 L718.0 83.3 L715.0 85.6 L711.8 88.8 L708.6 92.5 L707.3 93.4 L706.4 93.3 L701.3 91.2 L697.7 90.1 L693.7 89.3 L689.6 88.8 L681.0 88.6 L678.8 88.8 L672.8 89.7 L668.3 91.0 L665.1 92.2 L661.0 94.1 L655.9 97.3 L651.6 101.2 L648.2 105.5 L645.8 109.5 L644.2 112.8 L643.3 115.5 L642.0 121.6 L641.6 124.8 L641.8 131.3 L643.3 138.7 L645.2 144.0 L647.2 147.5 L649.2 150.3 L651.8 153.3 L656.7 157.5 L660.1 159.6 L660.6 160.3 L660.4 160.8 L659.9 161.1 L656.0 162.8 L651.7 165.3 L646.4 169.4 L644.3 171.9 L642.0 175.3 L641.0 177.2 L640.0 180.4 L639.8 185.3 L640.2 187.8 L641.0 190.2 L642.0 192.1 L644.4 195.4 L646.9 197.6 L649.8 199.4 L655.2 201.6 L658.9 202.3 L659.4 202.9 L659.2 203.5 L658.5 204.1 L653.7 206.2 L648.0 209.3 L643.8 212.2 L640.6 214.8 L638.2 217.8 L637.2 219.4 L636.1 222.0 L635.3 224.7 L635.0 227.8 L635.2 231.4 L636.0 234.4 L637.3 237.2 L639.3 240.1 L641.4 242.2 L643.6 244.0 L647.6 246.4 L650.1 247.6 L656.6 249.6 L664.0 251.1 L670.1 251.8 L679.7 252.0 L686.5 251.6 L692.8 250.7 L698.0 249.6 L701.9 248.6 L707.8 246.5 L715.2 242.6 L718.8 240.3 L722.9 237.2 L726.4 233.6 L729.6 229.6 L732.4 224.8 L733.5 222.6 L734.4 219.9 L735.4 215.3 L735.8 208.5 L735.4 204.0 L734.4 200.1 L732.6 196.5 L729.9 192.9 L727.7 191.0 L725.6 189.7 L722.9 188.2 L717.7 186.2 L713.5 185.2 L706.9 184.2 L697.5 183.5 L671.0 183.1 L664.2 182.6 L661.2 181.8 L658.4 180.5 L657.1 179.6 L655.8 177.8 L655.3 176.0 L655.3 174.3 L656.1 171.0 L657.8 168.4 L661.0 165.1 L664.7 162.8 L666.2 162.7 L672.5 164.6 L679.9 165.9 L687.2 166.1 L692.6 165.5 L697.2 164.6 L700.8 163.6 L705.7 161.7 L707.9 160.7 L711.9 158.2 L715.6 155.1 L718.1 152.5 L722.5 146.6 L724.5 142.5 L725.5 139.6 L726.4 136.3 L727.3 128.6 L727.1 124.0 L726.6 119.9 L725.7 115.9 L724.4 111.8 L722.5 107.9 L719.2 103.3 L716.0 99.6 L713.2 97.4 L712.9 96.9 L712.9 96.3 L713.6 95.6 L715.2 94.8 L719.2 94.0 L727.8 93.8 L734.7 94.8 L736.3 94.5 L736.6 93.7 L736.8 83.8 L737.3 79.0 L737.1 78.4Z  M654.0 218.7 L655.2 214.5 L656.9 210.9 L660.1 207.2 L663.2 204.2 L664.5 203.3 L667.4 203.1 L699.1 203.8 L702.1 204.0 L709.3 205.2 L713.9 206.8 L717.1 208.8 L718.8 210.7 L719.9 212.9 L720.9 216.2 L721.1 220.8 L720.9 223.7 L719.8 227.3 L718.8 229.8 L716.5 233.2 L714.3 235.6 L712.8 236.9 L708.4 239.9 L706.8 240.8 L701.9 242.7 L697.3 243.9 L689.4 244.9 L682.1 245.0 L677.6 244.5 L673.3 243.7 L669.7 242.7 L667.1 241.7 L664.1 240.1 L659.6 236.6 L656.8 233.4 L654.9 229.5 L654.1 226.8 L653.8 223.9Z  M683.6 93.6 L688.4 94.0 L691.3 95.0 L695.0 97.5 L697.9 100.9 L699.8 104.1 L700.9 106.7 L702.8 112.3 L703.7 117.8 L704.5 124.9 L704.5 128.2 L703.9 135.7 L702.9 141.9 L700.9 148.4 L699.4 151.5 L696.6 155.6 L693.1 158.5 L690.4 159.9 L687.4 160.7 L685.1 161.0 L682.2 160.7 L678.3 159.6 L673.3 156.4 L670.9 153.5 L669.0 150.3 L668.0 148.0 L666.0 141.8 L664.8 135.6 L664.1 126.9 L664.7 118.5 L665.9 111.7 L667.7 106.1 L669.0 103.3 L670.3 101.1 L672.5 98.4 L675.5 96.0 L677.4 95.0 L679.8 94.2Z"/></g><g class="l" style="--dx:-734.5px"><path d="M791.8 89.0 L782.4 91.2 L777.0 93.4 L773.1 95.3 L769.2 97.9 L764.6 101.4 L759.3 107.1 L756.1 111.5 L753.1 116.6 L751.3 120.8 L749.1 126.6 L748.0 130.8 L747.0 137.0 L746.6 141.9 L746.6 150.2 L747.2 156.7 L748.2 162.3 L749.2 165.9 L751.2 171.7 L753.3 176.2 L757.0 182.6 L759.0 185.5 L763.1 190.0 L767.8 193.9 L770.4 195.7 L777.2 199.4 L782.7 201.6 L786.3 202.6 L793.1 203.7 L799.3 204.1 L809.4 203.6 L814.9 202.4 L818.5 201.4 L823.1 199.5 L828.8 196.5 L831.7 194.6 L836.5 190.9 L839.1 188.3 L842.5 184.0 L846.6 177.4 L849.6 171.3 L851.4 166.1 L852.6 161.5 L853.6 156.0 L854.3 146.9 L853.9 139.4 L853.5 135.9 L852.6 130.3 L851.6 126.4 L850.3 122.5 L847.5 116.0 L845.6 112.5 L841.9 107.3 L839.9 104.9 L835.8 100.9 L834.1 99.5 L827.8 95.2 L824.0 93.2 L819.2 91.2 L811.3 89.2 L804.6 88.5 L797.6 88.5Z  M798.6 93.6 L801.9 93.6 L804.7 94.0 L808.0 95.0 L810.8 96.3 L814.9 99.4 L816.7 101.3 L819.7 105.0 L821.9 109.1 L823.7 113.4 L826.5 122.2 L827.9 129.3 L828.9 139.9 L828.9 153.2 L827.7 164.7 L825.8 173.9 L821.9 184.0 L820.6 186.4 L818.4 189.6 L816.4 192.0 L813.0 195.1 L810.6 196.6 L808.1 197.7 L805.1 198.6 L802.6 198.9 L798.9 198.9 L796.4 198.6 L793.4 197.8 L790.6 196.5 L787.9 194.9 L784.7 192.2 L781.0 187.4 L778.4 182.8 L777.0 179.7 L774.9 173.6 L772.8 163.8 L772.0 156.4 L771.5 148.7 L771.5 139.3 L771.8 133.1 L772.7 126.8 L775.0 117.1 L776.0 113.8 L777.8 109.6 L780.9 104.2 L782.5 102.2 L785.2 99.3 L787.8 97.4 L789.6 96.2 L792.4 94.9 L796.0 93.8Z "/></g><g class="l" style="--dx:-855.8px"><path d="M957.0 95.4 L952.1 92.2 L949.8 91.1 L946.6 90.0 L942.6 89.2 L938.5 88.8 L933.5 88.8 L929.9 89.2 L925.0 90.1 L921.4 91.2 L916.9 93.1 L913.0 95.1 L909.6 97.3 L904.4 101.5 L901.8 104.1 L901.0 104.5 L900.5 104.4 L900.3 103.8 L900.1 89.9 L899.5 89.2 L897.2 89.1 L896.0 89.3 L883.5 93.7 L871.3 97.3 L868.4 98.4 L867.4 99.1 L867.1 100.2 L867.5 101.0 L870.0 102.1 L872.7 103.9 L874.3 105.5 L875.6 107.6 L876.9 111.8 L877.5 117.9 L877.5 175.9 L877.3 183.2 L876.9 187.3 L876.6 188.9 L874.7 194.1 L873.5 195.9 L872.3 197.1 L868.3 199.4 L867.9 200.5 L868.3 201.6 L869.5 201.8 L909.1 201.5 L909.6 201.2 L909.8 200.3 L909.5 199.4 L907.5 198.6 L906.0 197.6 L904.0 195.8 L903.0 194.3 L902.0 192.0 L901.0 188.1 L900.6 184.9 L900.3 177.1 L900.3 111.8 L900.9 110.7 L902.5 109.1 L905.6 106.9 L910.7 104.0 L913.3 102.8 L918.8 101.0 L923.9 100.5 L927.3 100.5 L930.7 101.1 L934.9 103.0 L937.7 105.0 L939.1 106.5 L940.6 108.5 L941.7 110.7 L942.7 113.6 L943.8 119.2 L944.3 127.0 L944.3 177.0 L943.9 185.2 L942.8 191.1 L941.7 194.0 L940.5 195.8 L938.6 197.6 L935.4 199.4 L935.0 200.2 L935.1 201.1 L935.5 201.5 L936.7 201.7 L975.3 201.8 L976.1 201.5 L976.4 200.3 L976.0 199.2 L973.7 198.2 L972.0 196.9 L970.0 194.4 L968.8 191.9 L968.0 188.9 L967.5 185.4 L967.1 175.6 L967.1 122.2 L966.6 115.8 L965.9 111.4 L964.4 106.4 L962.6 102.4 L960.6 99.3Z "/></g><g class="l" style="--dx:-943.4px"><path d="M1020.4 88.9 L1019.5 88.8 L1016.3 89.3 L1007.1 92.7 L995.0 96.6 L992.9 97.1 L989.3 98.2 L988.6 98.7 L988.3 99.3 L988.3 100.2 L988.8 101.1 L991.0 102.2 L994.1 104.3 L995.8 106.2 L996.9 108.4 L997.7 111.1 L998.5 117.1 L998.5 176.5 L998.3 184.1 L997.7 188.6 L996.3 192.9 L994.9 195.4 L994.0 196.4 L991.8 198.2 L989.4 199.6 L989.1 200.8 L989.3 201.3 L989.8 201.6 L1028.8 201.6 L1029.8 201.5 L1030.4 200.8 L1030.4 199.9 L1030.1 199.3 L1027.1 197.9 L1025.2 196.0 L1023.9 194.2 L1023.1 192.5 L1022.1 189.6 L1021.3 183.6 L1021.1 179.0 L1021.2 90.0 L1021.1 89.4Z "/><circle cx="1009.4" cy="58" r="17" fill="#E8A33D"/></g><g class="l" style="--dx:-1023.6px"><path d="M1106.3 89.2 L1097.0 88.5 L1086.3 89.3 L1081.7 90.3 L1075.9 92.2 L1069.7 95.2 L1065.6 98.0 L1061.8 101.1 L1057.2 105.7 L1054.1 109.7 L1051.5 113.7 L1048.3 120.0 L1046.2 125.1 L1045.1 129.4 L1043.8 137.2 L1043.3 143.3 L1043.3 150.0 L1043.8 155.7 L1044.9 161.6 L1046.2 167.1 L1048.2 172.6 L1051.0 178.8 L1053.8 183.3 L1057.3 187.8 L1062.1 192.4 L1066.1 195.7 L1072.7 199.7 L1077.6 201.6 L1081.8 202.7 L1089.0 203.8 L1097.4 203.8 L1105.5 202.5 L1108.2 201.7 L1111.1 200.6 L1114.6 198.8 L1119.0 195.7 L1123.4 191.9 L1128.5 185.7 L1132.4 179.0 L1134.5 174.2 L1135.9 170.1 L1135.8 169.2 L1135.3 168.9 L1133.2 168.4 L1132.4 168.6 L1129.8 173.5 L1126.3 178.1 L1122.4 181.6 L1117.4 184.8 L1111.9 186.7 L1107.9 187.6 L1105.7 187.8 L1100.1 187.6 L1094.8 186.7 L1091.2 185.7 L1088.6 184.7 L1085.3 182.9 L1081.6 179.9 L1078.0 176.1 L1075.0 172.0 L1073.0 168.5 L1070.2 161.6 L1068.9 157.5 L1068.0 152.5 L1067.0 142.0 L1067.1 133.4 L1068.0 125.1 L1070.0 116.6 L1073.0 109.1 L1076.0 104.4 L1078.3 101.3 L1080.4 99.2 L1082.1 97.8 L1085.0 96.0 L1087.6 94.8 L1090.6 94.0 L1093.7 93.6 L1096.4 93.6 L1099.9 94.1 L1102.2 95.0 L1104.3 96.2 L1106.4 97.7 L1108.0 99.4 L1111.8 105.2 L1113.5 109.1 L1114.7 112.6 L1116.3 119.6 L1116.9 120.6 L1117.7 121.1 L1119.7 121.1 L1122.5 120.7 L1126.0 119.4 L1129.0 117.9 L1131.1 116.5 L1133.3 114.1 L1133.7 113.0 L1133.9 111.4 L1133.7 109.2 L1133.2 107.4 L1132.5 105.7 L1130.0 101.7 L1127.1 98.6 L1122.5 95.1 L1118.7 93.1 L1111.5 90.3Z "/></g></svg><svg class="logo" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="120 160 760 680"><defs><mask id="cg-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000"><rect width="1000" height="1000" fill="#fff"/><path d="M 558.6 619.1 L 553.9 621.9 L 549.2 624.8 L 544.5 627.7 L 539.8 630.5 L 535.1 633.3 L 530.4 636.1 L 525.7 638.9 L 521.0 641.7 L 516.3 644.5 L 511.6 647.2 L 507.0 650.0 L 502.3 652.7 L 497.6 655.4 L 492.9 658.1 L 488.2 660.7 L 483.6 663.4 L 478.9 666.0 L 474.3 668.6 L 469.6 671.2 L 465.0 673.7 L 460.4 676.3 L 455.8 678.8 L 451.2 681.3 L 446.6 683.8 L 442.0 686.2 L 437.5 688.6 L 433.0 691.0 L 428.4 693.4 L 423.9 695.8 L 419.4 698.1 L 415.0 700.4 L 410.5 702.7 L 406.1 705.0 L 401.7 707.2 L 397.3 709.4 L 392.9 711.6 L 388.6 713.7 L 384.2 715.8 L 380.0 717.9 L 375.7 720.0 L 371.4 722.0 L 367.2 724.0 L 363.0 726.0 L 358.8 728.0 L 354.7 729.9 L 350.6 731.8 L 346.5 733.6 L 342.5 735.5 L 338.4 737.3 L 334.4 739.0 L 330.5 740.7 L 326.6 742.4 L 322.7 744.1 L 318.8 745.8 L 315.0 747.4 L 311.2 748.9 L 307.4 750.5 L 303.7 752.0 L 300.0 753.4 L 296.4 754.9 L 292.8 756.3 L 289.2 757.6 L 285.7 759.0 L 282.2 760.3 L 278.8 761.5 L 275.4 762.7 L 272.0 763.9 L 268.7 765.1 L 265.4 766.2 L 262.2 767.3 L 259.0 768.3 L 255.8 769.3 L 252.7 770.3 L 249.7 771.2 L 246.7 772.1 L 243.7 773.0 L 240.8 773.8 L 237.9 774.6 L 235.1 775.3 L 232.3 776.1 L 229.6 776.7 L 226.9 777.4 L 224.3 778.0 L 221.7 778.5 L 219.2 779.0 L 216.8 779.5 L 214.3 780.0 L 212.0 780.4 L 209.6 780.7 L 207.4 781.1" fill="none" stroke="#000" stroke-width="38"/><circle cx="748.1" cy="488.4" r="56" fill="#000"/></mask><mask id="cg-moon" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000"><rect width="1000" height="1000" fill="#fff"/><circle cx="748.1" cy="488.4" r="56" fill="#000"/></mask></defs><g transform="translate(-30 -40)"><path d="M 165.3 772.9 L 164.1 770.4 L 163.3 767.7 L 163.0 764.7 L 163.1 761.4 L 163.7 757.9 L 164.7 754.1 L 166.2 750.1 L 168.1 745.8 L 170.4 741.3 L 173.2 736.5 L 176.4 731.5 L 180.1 726.3 L 184.1 720.8 L 188.6 715.1 L 193.5 709.3 L 198.8 703.2 L 204.6 696.9 L 210.7 690.5 L 217.2 683.8 L 224.1 677.0 L 231.3 670.1 L 239.0 663.0 L 247.0 655.7 L 255.3 648.3 L 263.9 640.8 L 272.9 633.2 L 282.2 625.4 L 291.8 617.6 L 301.7 609.7 L 311.9 601.6 L 322.3 593.6 L 333.0 585.4 L 343.9 577.3 L 355.1 569.0 L 366.4 560.8 L 378.0 552.5 L 389.8 544.2 L 401.7 535.9 L 413.8 527.7 L 426.0 519.4 L 438.3 511.2 L 450.8 503.0 L 463.3 494.9 L 476.0 486.8 L 488.7 478.9 L 501.4 470.9 L 514.2 463.1 L 527.0 455.4 L 539.8 447.8 L 552.6 440.3 L 565.4 432.9 L 578.1 425.7 L 590.8 418.6 L 603.4 411.7 L 615.9 404.9 L 628.3 398.3 L 640.6 391.9 L 652.7 385.7 L 664.7 379.6 L 676.5 373.8 L 688.2 368.2 L 699.6 362.7 L 710.9 357.5 L 721.9 352.6 L 732.7 347.9 L 743.3 343.4 L 753.6 339.1 L 763.6 335.1 L 773.3 331.4 L 782.8 327.9 L 791.9 324.7 L 800.7 321.8 L 809.2 319.1 L 817.3 316.7 L 825.1 314.6 L 832.6 312.8 L 839.6 311.2 L 846.3 309.9 L 852.6 308.9 L 858.5 308.3 L 864.0 307.8 L 869.1 307.7 L 873.8 307.9 L 878.1 308.4 L 881.9 309.1 L 885.4 310.1 L 888.3 311.5 L 890.9 313.1 L 893.0 315.0 L 894.7 317.1" fill="none" stroke="#E8A33D" stroke-width="14" stroke-linecap="round" mask="url(#cg-moon)"/><path d="M 520 215 C 379 215 265 360 265 540 C 265 720 386 865 535 865 C 640 865 722 800 762 688 C 722 765 642 798 562 798 C 478 798 410 682 410 540 C 410 388 472 262 548 262 C 622 262 664 322 684 392 C 686 400 692 404 702 404 C 742 404 790 386 790 352 C 780 268 660 215 520 215 Z" fill="#F2EDE3" mask="url(#cg-cut)"/><path d="M 894.7 317.1 L 895.9 319.6 L 896.7 322.3 L 897.0 325.3 L 896.9 328.6 L 896.3 332.1 L 895.3 335.9 L 893.8 339.9 L 891.9 344.2 L 889.6 348.7 L 886.8 353.5 L 883.6 358.5 L 879.9 363.7 L 875.9 369.2 L 871.4 374.9 L 866.5 380.7 L 861.2 386.8 L 855.4 393.1 L 849.3 399.5 L 842.8 406.2 L 835.9 413.0 L 828.7 419.9 L 821.0 427.0 L 813.0 434.3 L 804.7 441.7 L 796.1 449.2 L 787.1 456.8 L 777.8 464.6 L 768.2 472.4 L 758.3 480.3 L 748.1 488.4 L 737.7 496.4 L 727.0 504.6 L 716.1 512.7 L 704.9 521.0 L 693.6 529.2 L 682.0 537.5 L 670.2 545.8 L 658.3 554.1 L 646.2 562.3 L 634.0 570.6 L 621.7 578.8 L 609.2 587.0 L 596.7 595.1 L 584.0 603.2 L 571.3 611.1 L 558.6 619.1 L 545.8 626.9 L 533.0 634.6 L 520.2 642.2 L 507.4 649.7 L 494.6 657.1 L 481.9 664.3 L 469.2 671.4 L 456.6 678.3 L 444.1 685.1 L 431.7 691.7 L 419.4 698.1 L 407.3 704.3 L 395.3 710.4 L 383.5 716.2 L 371.8 721.8 L 360.4 727.3 L 349.1 732.5 L 338.1 737.4 L 327.3 742.1 L 316.7 746.6 L 306.4 750.9 L 296.4 754.9 L 286.7 758.6 L 277.2 762.1 L 268.1 765.3 L 259.3 768.2 L 250.8 770.9 L 242.7 773.3 L 234.9 775.4 L 227.4 777.2 L 220.4 778.8 L 213.7 780.1 L 207.4 781.1 L 201.5 781.7 L 196.0 782.2 L 190.9 782.3 L 186.2 782.1 L 181.9 781.6 L 178.1 780.9 L 174.6 779.9 L 171.7 778.5 L 169.1 776.9 L 167.0 775.0 L 165.3 772.9" fill="none" stroke="#E8A33D" stroke-width="14" stroke-linecap="round" mask="url(#cg-moon)"/><circle cx="748.1" cy="488.4" r="44" fill="#E8A33D"/></g></svg></span></a>
+<nav aria-label="Seções">
+<a href="#caos" data-i="n1">O problema</a>
+<a href="#servicos" data-i="n2">Serviços</a>
+<a href="#processo" data-i="n3">Processo</a>
+<a href="#contato" data-i="n4">Contato</a>
+</nav>
+<div class="lang" role="group" aria-label="Idioma / Language">
+<button type="button" data-l="pt" aria-pressed="true">PT</button>
+<button type="button" data-l="en" aria-pressed="false">EN</button>
+</div>
+</header>
+
+<ol class="clock" aria-label="Linha do tempo da página">
+<li><a href="#hero" data-s="hero"><span data-i="c1">t = 0 · nebulosa</span></a></li>
+<li><a href="#caos" data-s="caos"><span data-i="c2">colapso</span></a></li>
+<li><a href="#servicos" data-s="servicos"><span data-i="c3">protoestrela</span></a></li>
+<li><a href="#processo" data-s="processo"><span data-i="c4">ignição</span></a></li>
+<li><a href="#contato" data-s="contato"><span data-i="c5">estrela</span></a></li>
+</ol>
+
+<main id="main">
+<section class="stage" id="hero" aria-labelledby="h-hero">
+<div class="col">
+<p class="t" data-i="t1">t = 0 · uma nuvem de gás e poeira</p>
+<h1 id="h-hero" data-i="h1">Do caos ao cosmos.</h1>
+<p class="lead" data-i="l1">Sites, sistemas, automação e inteligência artificial para empresas que querem funcionar como um mundo bem construído, e não como uma nuvem de ferramentas soltas.</p>
+<div class="row">
+<a class="btn" href="#contato" data-i="b1">Conversar sobre o meu projeto</a>
+<a class="btn ghost" href="#servicos" data-i="b2">Ver serviços</a>
+</div>
+<p class="meta" data-i="m1">Sorocaba, Brasil · atendemos em português e inglês</p>
+</div>
+</section>
+
+<section class="stage" id="caos" aria-labelledby="h-caos">
+<div class="col">
+<p class="t" data-i="t2">~100 mil anos · a nuvem colapsa e começa a girar</p>
+<h2 id="h-caos" data-i="h2">Toda empresa começa espalhada.</h2>
+<p class="lead" data-i="l2">Planilha numa pasta, atendimento no WhatsApp pessoal, site que ninguém atualiza, processo que só existe na cabeça de alguém. Cada peça funciona sozinha, e o negócio gasta energia girando em volta delas.</p>
+<div class="chips" aria-label="Exemplos de peças soltas">
+<span data-i="k1">planilhas</span><span data-i="k2">WhatsApp pessoal</span><span data-i="k3">site parado</span><span data-i="k4">tarefas repetidas</span><span data-i="k5">dados perdidos</span><span data-i="k6">anúncios no escuro</span>
+</div>
+<p class="lead" data-i="l2b">A gente junta essas peças num centro só. É assim que uma estrela nasce: a gravidade organiza o que estava solto.</p>
+</div>
+</section>
+
+<section class="stage" id="servicos" aria-labelledby="h-serv">
+<div class="col">
+<p class="t" data-i="t3">~1 milhão de anos · o núcleo esquenta</p>
+<h2 id="h-serv" data-i="h3">Seis forças que formam a sua estrela.</h2>
+<ul class="list">
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s1">Sites</span></h3><p data-i="s1d">Páginas rápidas e bonitas que explicam o que você faz e transformam visita em conversa.</p></li>
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s2">Sistemas</span></h3><p data-i="s2d">Painéis, agendas e cadastros feitos para o jeito que a sua equipe trabalha.</p></li>
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s3">Automação</span></h3><p data-i="s3d">O que se repete todo dia passa a acontecer sozinho, do lembrete ao relatório.</p></li>
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s4">IA</span></h3><p data-i="s4d">Assistentes que respondem clientes, organizam informação e apoiam decisões.</p></li>
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s5">Marketing</span></h3><p data-i="s5d">Campanhas e conteúdo medidos, para saber o que traz cliente de verdade.</p></li>
+<li><h3><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="#E8A33D"/></svg><span data-i="s6">Consultoria</span></h3><p data-i="s6d">Um olhar de fora sobre a operação, com um plano do que construir primeiro.</p></li>
+</ul>
+</div>
+</section>
+
+<section class="stage" id="processo" aria-labelledby="h-proc">
+<div class="col">
+<p class="t" data-i="t4">~10 milhões de anos · a fusão acende</p>
+<h2 id="h-proc" data-i="h4">Como um mundo é construído.</h2>
+<ol class="steps">
+<li><span class="when" data-i="w1">primeiro</span><h3 data-i="p1">Diagnóstico</h3><p data-i="p1d">Entendemos a operação antes de propor qualquer coisa. Medir antes de construir.</p></li>
+<li><span class="when" data-i="w2">depois</span><h3 data-i="p2">Arquitetura</h3><p data-i="p2d">Desenhamos o que vai existir, em que ordem e quanto custa, por escrito.</p></li>
+<li><span class="when" data-i="w3">em seguida</span><h3 data-i="p3">Construção</h3><p data-i="p3d">Entregas curtas que você vê funcionando, em vez de meses de silêncio.</p></li>
+<li><span class="when" data-i="w4">sempre</span><h3 data-i="p4">Órbita</h3><p data-i="p4d">Acompanhamos o que foi entregue, ajustamos e melhoramos com o uso.</p></li>
+</ol>
+<div class="founder">
+<span data-i="f1">Você fala direto com quem constrói</span>
+<b>Kesley Doles</b>
+<span data-i="f2">Fundador · desenvolvedor de soluções digitais para negócios</span>
+</div>
+</div>
+</section>
+
+<section class="stage" id="contato" aria-labelledby="h-cont">
+<div class="col">
+<p class="t" data-i="t5">hoje · uma estrela que ilumina tudo em volta</p>
+<h2 id="h-cont" data-i="h5">Vamos criar o seu mundo?</h2>
+<p class="lead" data-i="l5">Conte em poucas linhas o que está espalhado aí. A mensagem sai pronta para o WhatsApp.</p>
+<form id="f" novalidate>
+<div class="two">
+<label for="nome"><span data-i="q1">Seu nome</span><input id="nome" name="nome" autocomplete="name" required></label>
+<label for="empresa"><span data-i="q2">Empresa</span><input id="empresa" name="empresa" autocomplete="organization"></label>
+</div>
+<label for="precisa"><span data-i="q3">O que você precisa</span>
+<select id="precisa" name="precisa">
+<option data-i="o0">Ainda não sei</option><option data-i="o1">Site</option><option data-i="o2">Sistema</option><option data-i="o3">Automação</option><option data-i="o4">IA</option><option data-i="o5">Marketing</option><option data-i="o6">Consultoria</option>
+</select></label>
+<label for="texto"><span data-i="q4">Conte o contexto</span><textarea id="texto" name="texto" required></textarea></label>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="row"><button class="btn" type="submit" data-i="b3">Preparar mensagem</button></div>
+<div class="done" id="done">
+<p data-i="d1">Mensagem pronta. Toque no botão para abrir o WhatsApp com o texto preenchido.</p>
+<div class="row"><a class="btn" id="wa" href="#" target="_blank" rel="noopener" data-i="b4">Abrir no WhatsApp</a><button class="btn ghost" type="button" id="copy" data-i="b5">Copiar texto</button></div>
+</div>
+</form>
+<div class="direct">
+<span data-i="dd">Ou fale direto:</span>
+<a href="mailto:kesleyydev@gmail.com">kesleyydev@gmail.com</a>
+<a href="https://wa.me/5515997229580" target="_blank" rel="noopener">+55 (15) 99722-9580</a>
+</div>
+</div>
+</section>
+</main>
+
+<footer>
+<span>© 2026 Cosmogonic AI · cosmogonicai.com</span>
+<span data-i="ft">Sorocaba, SP, Brasil · feito para durar em órbita</span>
+<button type="button" class="replay" id="replay" data-i="rp">Rever abertura</button>
+</footer>
+
+<script>
+{
+const EN={skip:"Skip to content",n1:"The problem",n2:"Services",n3:"Process",n4:"Contact",c1:"t = 0 · nebula",c2:"collapse",c3:"protostar",c4:"ignition",c5:"star",
+t1:"t = 0 · a cloud of gas and dust",h1:"From chaos to cosmos.",l1:"Websites, systems, automation and artificial intelligence for companies that want to run like a well-built world, not a cloud of loose tools.",b1:"Talk about my project",b2:"See services",m1:"Sorocaba, Brazil · we work in English and Portuguese",
+t2:"~100 thousand years · the cloud collapses and starts to spin",h2:"Every company starts scattered.",l2:"A spreadsheet in some folder, support on a personal WhatsApp, a website nobody updates, a process that only lives in someone's head. Each piece works alone, and the business spends its energy orbiting them.",k1:"spreadsheets",k2:"personal WhatsApp",k3:"stale website",k4:"repetitive tasks",k5:"lost data",k6:"ads in the dark",l2b:"We pull those pieces into a single center. That is how a star is born: gravity organizes what was loose.",
+t3:"~1 million years · the core heats up",h3:"Six forces that form your star.",s1:"Websites",s1d:"Fast, beautiful pages that explain what you do and turn visits into conversations.",s2:"Systems",s2d:"Dashboards, schedules and records built around how your team actually works.",s3:"Automation",s3d:"What repeats every day starts happening on its own, from reminders to reports.",s4:"AI",s4d:"Assistants that answer customers, organize information and support decisions.",s5:"Marketing",s5d:"Measured campaigns and content, so you know what really brings customers.",s6:"Consulting",s6d:"An outside look at your operation, with a plan for what to build first.",
+t4:"~10 million years · fusion ignites",h4:"How a world gets built.",w1:"first",w2:"then",w3:"next",w4:"always",p1:"Diagnosis",p1d:"We understand the operation before proposing anything. Measure before building.",p2:"Architecture",p2d:"We design what will exist, in what order and at what cost, in writing.",p3:"Construction",p3d:"Short deliveries you can see working, instead of months of silence.",p4:"Orbit",p4d:"We follow what was delivered, adjust it and improve it with use.",f1:"You talk directly to the person who builds",f2:"Founder · builds digital solutions for businesses",
+t5:"today · a star lighting up everything around it",h5:"Shall we create your world?",l5:"Tell us in a few lines what is scattered on your side. The message comes out ready for WhatsApp.",q1:"Your name",q2:"Company",q3:"What you need",q4:"Give us some context",o0:"Not sure yet",o1:"Website",o2:"System",o3:"Automation",o4:"AI",o5:"Marketing",o6:"Consulting",b3:"Prepare message",d1:"Message ready. Tap the button to open WhatsApp with the text filled in.",b4:"Open in WhatsApp",b5:"Copy text",dd:"Or reach us directly:",rp:"Replay intro",ft:"Sorocaba, SP, Brazil · built to stay in orbit"};
+const PT={};
+document.querySelectorAll('[data-i]').forEach(e=>{PT[e.dataset.i]=e.textContent});
+let lang='pt';
+const msgs={pt:{need:"Escreva seu nome e um pouco do contexto para eu entender o projeto.",copied:"Texto copiado.",nocopy:"Não deu para copiar aqui. Selecione o texto da mensagem manualmente.",hi:"Olá! Sou",from:"da",want:"Preciso de",ctx:"Contexto"},en:{need:"Please add your name and a bit of context so I can understand the project.",copied:"Text copied.",nocopy:"Copy isn't available here. Please select the message text by hand.",hi:"Hi! I'm",from:"from",want:"I need",ctx:"Context"}};
+const setLang=l=>{lang=l;const d=l==='en'?EN:PT;document.querySelectorAll('[data-i]').forEach(e=>{const v=d[e.dataset.i];if(v)e.textContent=v});document.documentElement.lang=l==='en'?'en':'pt-BR';document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));try{localStorage.setItem('cg-lang',l)}catch(e){}};
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.l)));
+try{const s=localStorage.getItem('cg-lang');if(s==='en')setLang('en')}catch(e){}
+
+const f=document.getElementById('f'),msg=document.getElementById('msg'),done=document.getElementById('done'),wa=document.getElementById('wa');
+let text='';
+f.addEventListener('submit',ev=>{ev.preventDefault();const m=msgs[lang],n=f.nome.value.trim(),c=f.texto.value.trim(),e=f.empresa.value.trim();
+f.nome.setAttribute('aria-invalid',!n);f.texto.setAttribute('aria-invalid',!c);
+if(!n||!c){msg.textContent=m.need;msg.className='msg err';done.classList.remove('on');(n?f.texto:f.nome).focus();return}
+text=`${m.hi} ${n}${e?' '+m.from+' '+e:''}. ${m.want}: ${f.precisa.value}.\n${m.ctx}: ${c}`;
+wa.href='https://wa.me/5515997229580?text='+encodeURIComponent(text);msg.textContent='';msg.className='msg';done.classList.add('on');wa.focus()});
+document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text);msg.textContent=msgs[lang].copied;msg.className='msg'}catch(e){msg.textContent=msgs[lang].nocopy;msg.className='msg err'}});
+
+/* ---------- céu: nascimento de uma estrela guiado pelo scroll ---------- */
+const cv=document.getElementById('sky'),ctx=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU=Math.PI*2;
+let W=0,H=0,DPR=1,stars=[],parts=[],target=0,prog=0,lite=false;
+let seed=7;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+const sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
+const mix=(a,b,t)=>a+(b-a)*t;
+const mk=(w,h=w)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+
+/* sprites pré-renderizados: desenhar imagem é muito mais barato que gradiente por partícula */
+function dot(rgb){const c=mk(32),g=c.getContext('2d'),gr=g.createRadialGradient(16,16,0,16,16,16);
+ gr.addColorStop(0,`rgba(${rgb},1)`);gr.addColorStop(.16,`rgba(${rgb},.9)`);gr.addColorStop(.42,`rgba(${rgb},.2)`);gr.addColorStop(1,`rgba(${rgb},0)`);
+ g.fillStyle=gr;g.fillRect(0,0,32,32);return c}
+const DOT={cool:dot('242,237,227'),blue:dot('160,180,225'),warm:dot('236,160,70'),hot:dot('255,232,190')};
+
+function nebula(sz,pal,n,sd,dust){seed=sd;const c=mk(sz),g=c.getContext('2d'),h=sz/2,cl=[];
+ for(let i=0;i<8;i++){const a=rnd()*TAU,r=rnd()*.28*sz;cl.push([h+Math.cos(a)*r,h+Math.sin(a)*r*.8])}
+ for(let i=0;i<n;i++){const k=cl[i%cl.length],a=rnd()*TAU,r=Math.pow(rnd(),1.5)*sz*.2,x=k[0]+Math.cos(a)*r,y=k[1]+Math.sin(a)*r;
+  const rad=sz*(.025+rnd()*.12),p=pal[Math.floor(rnd()*pal.length)],al=.02+rnd()*.055;
+  const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,`rgba(${p},${al})`);gr.addColorStop(1,`rgba(${p},0)`);g.fillStyle=gr;g.fillRect(x-rad,y-rad,rad*2,rad*2)}
+ /* faixas de poeira escura, como nas fotos do Hubble */
+ g.globalCompositeOperation='destination-out';
+ for(let i=0;i<dust;i++){const a=rnd()*TAU,r=rnd()*sz*.3,x=h+Math.cos(a)*r,y=h+Math.sin(a)*r,rad=sz*(.02+rnd()*.06);
+  g.save();g.translate(x,y);g.rotate(rnd()*TAU);g.scale(2.8,.6);const gr=g.createRadialGradient(0,0,0,0,0,rad);
+  gr.addColorStop(0,`rgba(0,0,0,${.3+rnd()*.4})`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(-rad,-rad,rad*2,rad*2);g.restore()}
+ g.globalCompositeOperation='destination-in';const m=g.createRadialGradient(h,h,sz*.1,h,h,h);m.addColorStop(0,'#000');m.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=m;g.fillRect(0,0,sz,sz);
+ return c}
+const NEB_A=nebula(1024,['58,76,124','36,48,82','92,74,118','140,160,210','70,96,150'],520,31,46);
+const NEB_B=nebula(768,['232,163,61','196,112,58','140,84,112','242,200,140'],300,57,28);
+
+/* superfície da estrela: granulação (as "bolhas" de plasma) */
+const SURF=(()=>{seed=99;const sz=512,c=mk(sz),g=c.getContext('2d'),h=sz/2;
+ let gr=g.createRadialGradient(h*.86,h*.82,0,h,h,h);gr.addColorStop(0,'#FFE3AA');gr.addColorStop(.45,'#F6BE62');gr.addColorStop(.8,'#E8A33D');gr.addColorStop(1,'#B8661C');g.fillStyle=gr;g.fillRect(0,0,sz,sz);
+ for(let i=0;i<2600;i++){const x=rnd()*sz,y=rnd()*sz,r=sz*(.006+rnd()*.017),l=rnd()<.5,q=g.createRadialGradient(x,y,0,x,y,r);
+  q.addColorStop(0,l?'rgba(255,250,232,.11)':'rgba(170,70,18,.075)');q.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=q;g.fillRect(x-r,y-r,r*2,r*2)}
+ for(let i=0;i<16;i++){const x=rnd()*sz,y=rnd()*sz,r=sz*(.035+rnd()*.06),q=g.createRadialGradient(x,y,0,x,y,r);
+  q.addColorStop(0,'rgba(255,252,240,.16)');q.addColorStop(1,'rgba(255,252,240,0)');g.fillStyle=q;g.fillRect(x-r,y-r,r*2,r*2)}
+ return c})();
+/* raio da coroa e pico de difração */
+const strip=(w,h,stops,sym)=>{const c=mk(w,h),g=c.getContext('2d'),gr=g.createLinearGradient(0,0,w,0);for(const [o,col] of stops)gr.addColorStop(o,col);g.fillStyle=gr;g.fillRect(0,0,w,h);
+ g.globalCompositeOperation='destination-in';const v=g.createLinearGradient(0,0,0,h);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(.5,'#000');v.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=v;g.fillRect(0,0,w,h);return c};
+const RAY=strip(256,16,[[0,'rgba(246,194,115,.9)'],[.35,'rgba(232,163,61,.35)'],[1,'rgba(232,163,61,0)']]);
+const SPIKE=strip(512,8,[[0,'rgba(255,240,215,0)'],[.5,'rgba(250,212,150,1)'],[1,'rgba(255,240,215,0)']]);
+
+/* textura do planeta recalculada por quadro (≈90×90 px): luz difusa + faixas + borda de atmosfera */
+const PC=mk(8),pcx=PC.getContext('2d');
+function shade(pr,L){const s=Math.max(8,Math.ceil(pr*2*DPR));if(PC.width!==s){PC.width=s;PC.height=s}
+ const img=pcx.createImageData(s,s),d=img.data,h=s/2;
+ for(let j=0;j<s;j++){const ny=(j+.5-h)/h;for(let i=0;i<s;i++){const nx=(i+.5-h)/h,q=nx*nx+ny*ny,o=(j*s+i)*4;if(q>=1)continue;
+  const nz=Math.sqrt(1-q),li=nx*L[0]+ny*L[1]+nz*L[2],soft=sm(-.08,.22,li),dif=soft*(.3+.7*Math.max(0,li));
+  const band=.5+.5*Math.sin(ny*8.5+Math.sin(nx*2.6+ny*1.3)*.7),rim=Math.pow(1-nz,2.4)*soft;
+  d[o]=Math.min(255,20+mix(232,244,band*.55)*dif+230*rim);d[o+1]=Math.min(255,26+mix(163,222,band*.55)*dif+170*rim);d[o+2]=Math.min(255,40+mix(61,190,band*.55)*dif+90*rim);
+  d[o+3]=255*Math.min(1,(1-Math.sqrt(q))*h)}}
+ pcx.putImageData(img,0,0);return PC}
+function radial(x,y,r,st){const g=ctx.createRadialGradient(x,y,0,x,y,r);for(const [o,c] of st)g.addColorStop(o,c);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
+
+function build(){
+ const mobile=W<760,f=lite?.5:1;seed=7;
+ stars=[];for(let i=0;i<Math.round((mobile?170:340)*f);i++){const k=rnd();stars.push({x:rnd(),y:rnd(),r:Math.pow(rnd(),3)*1.9+.3,a:rnd()*.55+.25,tw:rnd()*TAU,c:k<.12?'warm':k<.32?'blue':'cool'})}
+ parts=[];const N=Math.round((mobile?750:1700)*f);
+ for(let i=0;i<N;i++){const ca=rnd()*TAU,cd=Math.pow(rnd(),.55),dr=.45+Math.pow(rnd(),1.5)*3;
+  parts.push({cx:Math.cos(ca)*cd*4.4+(rnd()-.5)*.9,cy:Math.sin(ca)*cd*2.9+(rnd()-.5)*.9,ph:rnd()*TAU,dr,dz:(rnd()-.5)*.2*dr,
+   s:rnd()*1.4+.6,deb:rnd()<.22,er:2.4+rnd()*.7,blue:rnd()<.35,lag:rnd()})}
+}
+function size(){DPR=Math.min(lite?1:2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);build()}
+function onScroll(){const m=document.documentElement.scrollHeight-innerHeight;target=m>0?scrollY/m:0;document.getElementById('bar').style.width=(target*100)+'%';if(still)kick()}
+
+function frame(ms){
+ const t=still?40:ms/1000;prog=mix(prog,target,still?.14:.07);perf(ms);const p=prog;
+ const mobile=W<760,R=mobile?Math.min(W,H)*.2:Math.min(W,H)*.17;
+ const X=mobile?W*.5:W*.68,Y=mobile?H*.27:H*.5;
+ /* linha do tempo: nebulosa → colapso → protoestrela com disco e jatos → ignição → estrela */
+ const col=sm(.04,.4,p),disk=sm(.26,.52,p),proto=sm(.2,.56,p),jet=sm(.4,.52,p)*(1-sm(.63,.71,p)),
+  flash=sm(.62,.69,p)*(1-sm(.69,.84,p)),star=sm(.63,.75,p),blow=sm(.66,.86,p),wave=sm(.65,.85,p),orb=sm(.78,.9,p),gat=sm(.8,.95,p),body=sm(.89,.98,p);
+ const TILT=.26,DRT=-.18,cr=Math.cos(DRT),sr=Math.sin(DRT);
+ /* órbita do planeta que nasce da poeira que sobrou */
+ const OR=mobile?2.25:2.65,PA=2.55+t*.55/Math.pow(OR,1.5),pox=Math.cos(PA)*OR,poy=Math.sin(PA)*OR*TILT;
+ const PX=X+(pox*cr-poy*sr)*R,PY=Y+(pox*sr+poy*cr)*R,PR=R*(mobile?.17:.15),pBehind=Math.sin(PA)<0;
+ ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.clearRect(0,0,W,H);
+
+ /* campo de estrelas com paralaxe */
+ const par=p*70;ctx.fillStyle='#F2EDE3';
+ for(const s of stars){if(s.r>1.25)continue;ctx.globalAlpha=s.a*(still?1:.7+.3*Math.sin(t*1.1+s.tw*3));ctx.fillRect(s.x*W,((s.y*H-par*(.4+s.r*.3))%H+H)%H,s.r,s.r)}
+ ctx.globalCompositeOperation='lighter';
+ for(const s of stars){if(s.r<=1.25)continue;ctx.globalAlpha=s.a*(still?1:.65+.35*Math.sin(t*.9+s.tw*3));const z=s.r*5.5,y=((s.y*H-par*(.4+s.r*.3))%H+H)%H;ctx.drawImage(DOT[s.c],s.x*W-z/2,y-z/2,z,z)}
+
+ /* nebulosa: encolhe e gira enquanto colapsa; depois vira resto iluminado */
+ const NS=R*mix(11.5,4.4,col)*(1+blow*.3),na=mix(.95,.4,col)*(1-star*.3)*(mobile?.7:1);
+ ctx.save();ctx.translate(X,Y);ctx.rotate(t*.012+col*1.1);ctx.globalAlpha=na;ctx.drawImage(NEB_A,-NS/2,-NS*.4,NS,NS*.8);ctx.restore();
+ const NB=NS*mix(.8,.62,col);
+ ctx.save();ctx.translate(X,Y);ctx.rotate(-t*.017-col*.7);ctx.globalAlpha=na*mix(.35,.9,Math.max(proto,star));ctx.drawImage(NEB_B,-NB/2,-NB*.36,NB,NB*.72);ctx.restore();
+
+ /* núcleo da protoestrela */
+ if(proto>0&&star<1){const pr=R*mix(.5,1.5,proto),a=proto*(1-star)*(.75+(still?0:.08*Math.sin(t*2.2)));
+  radial(X,Y,R*.62,[[0,`rgba(255,250,236,${a})`],[.25,`rgba(255,226,170,${a*.75})`],[.6,`rgba(240,160,80,${a*.25})`],[1,'rgba(255,200,120,0)']]);
+  radial(X,Y,pr*2.4,[[0,`rgba(255,222,165,${a})`],[.12,`rgba(240,150,64,${a*.6})`],[.45,`rgba(150,60,42,${a*.18})`],[1,'rgba(150,60,42,0)']])}
+
+ /* jatos bipolares, perpendiculares ao disco: 3 camadas pra ficarem difusos */
+ if(jet>0&&!lite){ctx.save();ctx.translate(X,Y);ctx.rotate(DRT);
+  for(const sg of[-1,1])for(const [wd,al] of [[.025,.32],[.07,.12],[.16,.05]]){const L=R*mix(.3,2.3,jet)*(1+(still?0:.05*Math.sin(t*6+sg))),g=ctx.createLinearGradient(0,0,0,sg*L);
+   g.addColorStop(0,`rgba(255,232,195,${al*jet})`);g.addColorStop(.35,`rgba(160,180,225,${al*.4*jet})`);g.addColorStop(1,'rgba(160,180,225,0)');
+   ctx.globalAlpha=1;ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(-R*wd*.3,0);ctx.lineTo(R*wd*.3,0);ctx.lineTo(R*wd,sg*L);ctx.lineTo(-R*wd,sg*L);ctx.closePath();ctx.fill()}
+  ctx.restore()}
+
+ /* partículas: nuvem → disco de acreção (órbita kepleriana) → sopradas pela ignição */
+ const back=[],front=[],cw0=t*.015;
+ for(const q of parts){
+  const cw=cw0/(.5+Math.hypot(q.cx,q.cy)*.25),sc=mix(1,.5,col);
+  const cx=(q.cx*Math.cos(cw)-q.cy*Math.sin(cw))*sc,cy=(q.cx*Math.sin(cw)+q.cy*Math.cos(cw))*sc;
+  let r,keep=1,th,gi=0;
+  if(q.deb){r=mix(q.dr,q.er*OR/2.75,blow);th=q.ph+t*.55/Math.pow(r,1.5);
+   if(gat>0){gi=sm(0,1,gat*1.4-q.lag*.4);th+=Math.atan2(Math.sin(PA-th),Math.cos(PA-th))*gi+(q.lag-.5)*.35*gi*(1-gi);r=mix(r,OR,gi)+(q.lag-.5)*.3*(1-gi)}}
+  else{r=q.dr*(1+blow*blow*3.4);keep=1-blow;th=q.ph+t*.55/Math.pow(r,1.5)}
+  const dx=Math.cos(th)*r,dy=Math.sin(th)*r*TILT+q.dz*TILT*(1-blow)*(1-gi);
+  const kk=sm(0,1,disk*1.3-q.lag*.3),x=mix(cx,dx,kk),y=mix(cy,dy,kk);
+  const heat=kk*Math.max(0,1-(r-1)/2.2)*(1-star*.5);
+  const al=(.32+.48*kk)*keep*(q.deb?mix(1,.6,blow)*(1+gi*.6)*(1-body*.95):1);if(al<.02)continue;
+  const d={x:X+(x*cr-y*sr)*R,y:Y+(x*sr+y*cr)*R,z:q.s*(1+heat*.7)*4.6,al,spr:heat>.55?DOT.hot:heat>.18||gi>.35?DOT.warm:q.blue?DOT.blue:DOT.cool};
+  (kk>.5&&Math.sin(th)<0?back:front).push(d);
+ }
+ const drawP=l=>{for(const d of l){ctx.globalAlpha=d.al;ctx.drawImage(d.spr,d.x-d.z/2,d.y-d.z/2,d.z,d.z)}};
+ /* linha da órbita: a onda de choque se acomoda nela */
+ if(orb>0){ctx.globalAlpha=.16*orb;ctx.strokeStyle='#E8C48A';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(X,Y,OR*R,OR*R*TILT,DRT,0,TAU);ctx.stroke()}
+ drawP(back);
+ if(body>0&&pBehind)planet();
+
+ function planet(){
+  /* sombreamento físico: cada pixel da esfera recebe luz conforme o ângulo com a estrela (Lambert).
+     atrás da estrela vemos o lado iluminado (cheio); na frente, o lado da noite (novo); nos lados, meio a meio */
+  const k=Math.sqrt(1-TILT*TILT),cs=Math.cos(PA),sn=Math.sin(PA),lx=-cs,ly=-sn*TILT,lz=-sn*k;
+  const L=[lx*cr-ly*sr,lx*sr+ly*cr,lz],phase=(1+lz)/2,rot=-.55,rw=Math.max(1,PR*.09);
+  const ring=(a0,a1)=>{ctx.globalCompositeOperation='source-over';ctx.globalAlpha=body*mix(.35,.9,phase);ctx.strokeStyle='#E8A33D';ctx.lineWidth=rw;ctx.beginPath();ctx.ellipse(PX,PY,PR*1.9,PR*.5,rot,a0,a1);ctx.stroke()};
+  ctx.globalCompositeOperation='lighter';radial(PX,PY,PR*2.6,[[0,`rgba(240,176,90,${.28*body*phase})`],[.4,`rgba(232,163,61,${.1*body*phase})`],[1,'rgba(232,163,61,0)']]);
+  ring(Math.PI,TAU);
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=body;ctx.drawImage(shade(PR,L),PX-PR,PY-PR,PR*2,PR*2);
+  ring(0,Math.PI);
+ }
+ /* aglomerado brilhando enquanto a poeira se junta */
+ if(gat>0&&body<1){ctx.globalCompositeOperation='lighter';radial(PX,PY,PR*3.2,[[0,`rgba(255,214,150,${.4*gat*(1-body)})`],[.35,`rgba(232,163,61,${.14*gat*(1-body)})`],[1,'rgba(232,163,61,0)']])}
+ /* a estrela */
+ if(star>0){
+  const Rs=R*mix(.3,.6,star)*(1+(still?0:.012*Math.sin(t*1.3)));
+  radial(X,Y,Rs*7.5,[[0,`rgba(240,170,78,${.42*star})`],[.12,`rgba(236,163,61,${.22*star})`],[.4,`rgba(200,110,50,${.07*star})`],[1,'rgba(200,110,50,0)']]);
+  if(!lite){ctx.save();ctx.translate(X,Y);const n=60;
+   for(let i=0;i<n;i++){const a=i/n*TAU+Math.sin(i*12.9)*.05+t*.008,L=Rs*(1.2+.6*(.5+.5*Math.sin(t*.6+i*2.3))*(.55+.45*Math.sin(i*7.1)));
+    ctx.rotate(a);ctx.globalAlpha=.16*star;ctx.drawImage(RAY,Rs*.82,-Rs*.045,L,Rs*.09);ctx.rotate(-a)}
+   ctx.restore()}
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=star;
+  ctx.save();ctx.beginPath();ctx.arc(X,Y,Rs,0,TAU);ctx.clip();ctx.translate(X,Y);
+  ctx.rotate(t*.03);ctx.drawImage(SURF,-Rs*1.1,-Rs*1.1,Rs*2.2,Rs*2.2);ctx.rotate(-t*.03);
+  const ld=ctx.createRadialGradient(0,0,Rs*.3,0,0,Rs);ld.addColorStop(0,'rgba(120,40,10,0)');ld.addColorStop(.8,'rgba(170,70,20,.1)');ld.addColorStop(1,'rgba(140,45,10,.32)');ctx.fillStyle=ld;ctx.fillRect(-Rs,-Rs,Rs*2,Rs*2);
+  ctx.restore();
+  ctx.globalCompositeOperation='lighter';
+  radial(X,Y,Rs*1.02,[[0,`rgba(255,226,165,${.4*star})`],[.55,`rgba(242,186,100,${.14*star})`],[1,'rgba(255,220,160,0)']]);
+  radial(X,Y,Rs*1.4,[[0,'rgba(255,225,170,0)'],[.66,'rgba(255,225,170,0)'],[.72,`rgba(245,188,100,${.45*star})`],[1,'rgba(232,163,61,0)']]);
+  const sp=star*(.24+(still?0:.06*Math.sin(t*.9)));ctx.save();ctx.translate(X,Y);
+  for(const [a,l,w] of [[0,4.2,1],[Math.PI/2,4.2,1],[Math.PI/4,2.2,.45],[-Math.PI/4,2.2,.45]]){ctx.rotate(a);ctx.globalAlpha=sp*w;ctx.drawImage(SPIKE,-Rs*l,-Rs*.035,Rs*l*2,Rs*.07);ctx.rotate(-a)}
+  ctx.restore();
+ }
+ /* clarão e onda de choque da ignição */
+ if(flash>0)radial(X,Y,R*mix(1,6,flash),[[0,`rgba(255,250,235,${.85*flash})`],[.2,`rgba(255,215,150,${.4*flash})`],[1,'rgba(255,190,110,0)']]);
+ if(wave>0&&wave<1){ctx.globalAlpha=(1-wave)*.5;ctx.strokeStyle='#FFE1B4';ctx.lineWidth=1.4;ctx.beginPath();const wr=R*mix(.6,OR,wave);ctx.ellipse(X,Y,wr,wr*TILT,DRT,0,TAU);ctx.stroke()}
+ drawP(front);
+ if(body>0&&!pBehind)planet();
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+ if(!still||Math.abs(prog-target)>.0004)requestAnimationFrame(frame);else running=false;
+}
+let running=false;const kick=()=>{if(!running){running=true;requestAnimationFrame(frame)}};
+let last=0,slow=0;
+function perf(ms){if(still)return;if(last&&!lite){const dt=ms-last;slow=dt>27?slow+1:Math.max(0,slow-1);if(slow>24){lite=true;size()}}last=ms}
+addEventListener('resize',size);addEventListener('scroll',onScroll,{passive:true});
+size();onScroll();running=true;requestAnimationFrame(frame);cv.classList.add('on');
+if(still)addEventListener('resize',kick);
+
+/* relógio cósmico: seção atual */
+const links=[...document.querySelectorAll('.clock a, nav a')];
+const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){links.forEach(l=>l.classList.toggle('here',l.getAttribute('href')==='#'+e.target.id))}},{rootMargin:'-45% 0px -45% 0px'});
+document.querySelectorAll('main section').forEach(s=>io.observe(s));
+}
+</script>
+<script>
+{
+const D={"g":[{"ch":"c","d":"M77.0 88.6 L70.3 88.6 L64.5 89.2 L59.3 90.2 L55.7 91.2 L48.9 94.1 L47.0 95.1 L39.3 100.8 L33.4 106.8 L30.1 111.4 L27.0 116.5 L24.2 122.6 L22.2 129.1 L21.0 134.0 L20.3 138.7 L20.0 142.6 L20.1 151.8 L21.3 159.4 L23.2 166.2 L25.0 171.5 L28.0 177.9 L31.1 183.3 L33.4 186.3 L36.9 190.2 L40.9 193.9 L44.3 196.4 L49.6 199.5 L54.5 201.5 L58.4 202.6 L63.6 203.6 L71.8 204.0 L76.3 203.6 L81.6 202.7 L85.2 201.7 L88.1 200.7 L91.9 198.6 L99.1 193.3 L103.5 188.5 L106.3 184.3 L108.9 179.8 L111.5 174.2 L112.9 170.1 L112.8 169.2 L112.1 168.7 L110.5 168.6 L109.6 168.9 L106.7 174.0 L103.6 178.1 L101.8 180.0 L99.0 182.2 L96.1 183.9 L92.5 185.7 L88.9 186.8 L82.7 187.8 L78.7 187.8 L71.2 186.6 L65.9 184.7 L62.2 182.6 L58.3 179.3 L55.0 175.6 L52.1 171.2 L49.0 165.5 L47.0 160.0 L45.8 155.1 L45.0 150.4 L44.5 144.7 L44.3 135.1 L45.0 127.4 L46.8 118.5 L49.1 111.7 L53.0 104.7 L55.8 101.2 L57.9 99.2 L60.7 97.0 L63.1 95.6 L64.8 94.9 L67.8 94.0 L72.0 93.6 L75.6 93.8 L79.7 95.1 L82.3 96.8 L84.5 98.7 L86.4 100.9 L88.4 104.1 L90.7 108.8 L92.7 115.3 L93.8 120.2 L94.4 120.9 L94.9 121.2 L96.5 121.3 L100.3 120.6 L103.5 119.5 L105.7 118.4 L109.3 115.9 L110.7 113.8 L111.1 112.0 L111.1 110.0 L110.6 107.9 L109.5 105.4 L107.2 101.9 L104.7 99.0 L100.2 95.3 L98.3 94.1 L94.4 92.3 L88.0 90.2 L83.1 89.2Z ","cx":66.5},{"ch":"o","d":"M175.8 88.5 L169.7 89.0 L163.8 90.1 L157.9 92.0 L153.4 94.0 L149.6 96.0 L145.0 99.3 L141.5 102.3 L138.1 105.9 L135.4 109.4 L132.2 114.1 L129.2 119.5 L128.0 122.7 L126.2 129.6 L125.2 134.8 L124.3 142.5 L124.3 149.5 L125.2 157.4 L126.1 162.0 L127.5 167.2 L129.2 172.1 L132.2 178.2 L135.1 183.0 L138.0 186.8 L140.5 189.5 L145.1 193.4 L149.8 196.6 L153.1 198.4 L157.8 200.6 L161.4 201.8 L169.6 203.6 L175.7 204.1 L179.7 204.1 L185.2 203.7 L192.1 202.5 L195.7 201.6 L198.8 200.4 L203.3 198.3 L209.7 194.5 L214.5 190.6 L217.0 188.0 L223.6 179.1 L226.6 173.6 L228.6 168.5 L229.6 165.2 L230.7 159.7 L231.6 153.4 L232.0 146.8 L231.6 138.7 L230.7 132.3 L229.7 127.1 L228.5 123.6 L226.5 118.7 L223.7 113.3 L220.4 108.3 L217.0 104.0 L213.9 101.0 L209.4 97.4 L205.2 94.8 L201.8 93.2 L197.3 91.3 L193.1 90.1 L187.6 89.0 L182.8 88.5Z  M175.9 93.6 L182.4 94.0 L186.0 95.0 L187.9 96.0 L191.3 98.2 L193.7 100.4 L197.6 105.4 L198.9 107.5 L200.9 111.7 L202.7 116.3 L203.9 120.5 L205.7 128.4 L207.0 140.6 L207.1 147.2 L206.9 153.8 L205.9 163.3 L204.9 168.9 L202.7 177.0 L200.7 182.2 L198.8 185.7 L196.9 188.6 L194.6 191.7 L191.4 194.6 L188.3 196.6 L185.7 197.7 L182.4 198.6 L179.6 199.0 L176.6 199.0 L174.1 198.6 L170.7 197.7 L167.9 196.4 L165.6 194.9 L162.9 192.5 L161.0 190.6 L158.9 187.9 L155.9 182.4 L154.0 177.9 L152.0 171.7 L150.9 166.5 L150.0 161.5 L149.0 149.9 L149.0 142.9 L149.5 134.5 L150.0 129.3 L150.9 124.0 L151.8 119.8 L154.9 111.0 L156.3 107.9 L158.3 104.8 L160.9 101.5 L165.7 97.1 L169.7 94.9 L172.7 94.0Z ","cx":178.2},{"ch":"s","d":"M307.9 91.3 L298.8 89.3 L294.0 88.8 L287.5 88.5 L279.6 88.8 L273.1 90.0 L269.2 91.2 L266.4 92.3 L261.2 95.1 L256.0 99.5 L254.6 101.3 L253.1 103.7 L251.3 107.2 L250.1 110.4 L249.2 115.0 L249.0 118.9 L249.2 122.5 L250.2 127.4 L252.0 132.0 L254.0 135.5 L257.3 139.8 L261.7 143.8 L265.8 146.7 L273.2 151.4 L290.2 160.9 L293.1 162.8 L295.9 165.0 L298.7 168.2 L300.8 172.0 L302.1 176.1 L302.3 178.0 L302.3 182.0 L301.6 186.4 L300.9 188.5 L299.5 191.2 L297.0 194.2 L293.7 196.6 L289.7 198.3 L287.6 198.7 L284.4 199.1 L278.9 198.7 L275.0 197.8 L272.0 196.8 L268.3 194.6 L265.5 192.5 L261.3 188.3 L257.1 182.7 L255.1 179.6 L252.0 173.5 L249.6 167.5 L248.8 167.0 L247.6 167.0 L246.9 167.5 L246.8 169.2 L247.5 175.9 L247.6 182.8 L248.5 195.8 L248.8 196.7 L249.7 197.4 L254.3 199.4 L262.0 201.7 L272.9 203.6 L278.4 203.9 L284.0 204.0 L291.1 203.4 L296.1 202.6 L299.1 201.6 L303.9 199.5 L307.4 197.5 L310.4 195.2 L313.6 191.9 L315.7 189.4 L317.6 186.3 L319.4 182.3 L320.6 178.5 L321.4 173.2 L321.4 168.5 L320.6 163.2 L319.6 159.9 L318.4 157.1 L316.3 153.3 L313.1 149.3 L311.2 147.4 L306.0 143.2 L302.6 141.0 L289.5 133.9 L280.4 128.5 L274.0 123.9 L272.3 122.4 L270.0 119.3 L268.0 114.8 L267.5 112.1 L267.5 107.2 L268.1 104.1 L268.9 102.2 L269.9 100.6 L272.5 97.7 L274.8 96.0 L276.4 95.2 L279.6 94.0 L284.4 93.5 L289.9 93.8 L293.5 94.9 L296.3 96.1 L298.9 97.8 L302.6 101.0 L306.2 105.1 L308.6 108.8 L311.6 114.9 L312.9 119.4 L313.8 120.0 L315.3 119.8 L315.7 119.3 L315.8 118.4 L315.4 95.2 L315.0 94.4 L312.0 92.8Z ","cx":284.2},{"ch":"m","d":"M334.1 98.9 L333.9 100.1 L334.4 101.2 L338.9 103.8 L340.6 105.4 L341.6 107.0 L342.9 110.1 L343.8 116.1 L344.0 150.0 L343.8 152.0 L343.8 184.3 L342.8 189.9 L341.4 193.6 L340.5 195.3 L339.2 196.7 L337.4 198.1 L335.0 199.4 L334.6 200.5 L334.8 201.1 L335.2 201.5 L336.1 201.8 L375.4 201.5 L375.8 201.1 L375.9 200.2 L375.6 199.3 L372.0 197.5 L369.9 195.4 L369.0 194.1 L368.0 191.2 L367.0 184.9 L366.8 111.3 L367.5 109.9 L369.7 108.0 L373.6 105.2 L376.3 103.8 L380.5 102.0 L383.5 101.0 L389.2 100.3 L393.0 100.7 L395.8 101.3 L399.4 103.0 L401.9 104.9 L403.9 107.1 L405.7 110.4 L406.8 113.2 L407.6 117.6 L408.1 125.0 L408.1 154.5 L408.0 156.1 L408.1 174.3 L407.8 185.5 L406.7 191.0 L405.4 194.2 L404.6 195.5 L402.5 197.6 L399.4 199.6 L399.0 200.8 L399.5 201.5 L400.7 201.8 L402.3 201.6 L438.6 201.6 L439.5 201.5 L439.9 201.1 L439.9 200.1 L439.6 199.3 L437.3 198.3 L435.8 197.1 L434.3 195.4 L433.3 193.8 L432.0 190.0 L431.3 185.7 L431.1 181.4 L431.1 134.7 L431.3 132.8 L431.1 122.2 L430.4 114.2 L429.9 111.4 L430.4 110.3 L432.5 108.3 L437.2 105.1 L439.2 104.1 L446.9 101.1 L452.6 100.5 L455.3 100.5 L459.3 101.2 L463.3 103.0 L466.4 105.1 L468.0 107.1 L469.7 110.0 L470.8 112.9 L471.8 117.2 L472.5 124.9 L472.5 176.9 L472.3 184.2 L471.7 188.6 L470.7 192.5 L469.7 194.4 L468.5 195.9 L466.1 198.2 L464.0 199.5 L463.7 200.3 L463.9 201.2 L464.9 201.8 L504.1 201.6 L504.6 201.2 L504.8 200.3 L504.4 199.5 L500.9 197.6 L499.2 196.0 L498.2 194.5 L496.8 191.3 L495.8 186.8 L495.5 182.6 L495.3 175.3 L495.4 126.1 L494.4 113.5 L492.6 106.6 L490.3 101.5 L487.3 97.4 L484.9 95.1 L482.1 93.1 L477.6 91.0 L471.4 89.2 L468.2 88.8 L462.5 88.8 L456.5 89.4 L450.2 91.2 L447.9 92.1 L441.5 95.2 L438.4 97.3 L433.6 101.1 L429.6 105.4 L428.8 105.9 L428.2 105.8 L427.8 105.4 L426.5 102.6 L424.3 99.2 L422.2 96.7 L419.2 94.1 L414.9 91.6 L411.2 90.2 L407.3 89.2 L403.8 88.8 L398.8 88.8 L393.3 89.3 L389.7 90.2 L384.2 92.2 L377.6 95.7 L371.1 100.8 L367.5 104.2 L366.8 103.8 L366.6 102.9 L366.8 90.0 L366.6 89.4 L365.8 89.0 L362.3 89.3 L353.3 92.5 L335.0 98.1Z ","cx":419.4},{"ch":"o","d":"M561.8 89.0 L556.6 90.0 L551.8 91.3 L547.0 93.3 L540.1 97.0 L535.3 100.6 L530.6 105.3 L529.1 107.0 L526.0 111.4 L523.3 116.0 L520.1 123.0 L519.2 125.6 L518.0 130.4 L516.5 142.5 L516.5 151.1 L517.2 157.2 L519.3 166.6 L521.2 171.8 L524.2 178.2 L526.5 182.0 L529.3 185.8 L532.4 189.2 L537.0 193.4 L540.1 195.6 L545.2 198.5 L552.3 201.5 L556.5 202.6 L562.4 203.7 L568.2 204.1 L575.8 203.9 L579.3 203.6 L584.8 202.5 L590.7 200.6 L594.9 198.7 L599.0 196.4 L602.3 194.0 L606.6 190.5 L610.7 186.2 L613.6 182.4 L615.6 179.3 L618.6 173.5 L620.5 168.3 L622.5 160.8 L623.4 155.8 L623.8 152.0 L623.9 145.0 L623.4 136.3 L622.6 131.0 L621.4 126.4 L619.6 120.8 L617.6 116.3 L614.5 110.6 L612.3 107.5 L610.0 104.8 L606.6 101.4 L601.1 97.0 L596.3 94.1 L589.1 91.3 L585.3 90.1 L580.7 89.2 L574.9 88.6 L568.6 88.5Z  M568.6 93.6 L571.9 93.6 L575.0 94.0 L578.3 95.0 L580.8 96.2 L583.4 98.0 L586.1 100.4 L589.8 105.2 L591.8 108.7 L593.7 112.9 L594.8 116.1 L596.7 123.3 L597.9 130.2 L598.8 142.5 L598.6 154.4 L597.4 165.6 L595.7 173.6 L593.9 179.2 L590.9 185.6 L588.8 189.1 L586.6 191.8 L584.0 194.4 L580.6 196.6 L578.0 197.7 L575.1 198.6 L572.2 199.0 L568.9 198.9 L566.7 198.7 L563.6 198.0 L560.2 196.6 L556.3 193.8 L553.8 191.2 L551.1 187.7 L548.2 182.5 L545.9 176.5 L544.1 170.2 L543.0 165.0 L542.0 158.1 L541.3 147.0 L541.6 135.5 L542.9 125.0 L545.0 116.2 L547.0 111.1 L548.7 107.8 L553.3 101.0 L557.7 97.2 L561.8 95.0 L565.4 94.0Z ","cx":570.2},{"ch":"g","d":"M736.7 78.0 L732.5 78.0 L729.6 78.4 L726.3 79.3 L721.2 81.3 L718.0 83.3 L715.0 85.6 L711.8 88.8 L708.6 92.5 L707.3 93.4 L706.4 93.3 L701.3 91.2 L697.7 90.1 L693.7 89.3 L689.6 88.8 L681.0 88.6 L678.8 88.8 L672.8 89.7 L668.3 91.0 L665.1 92.2 L661.0 94.1 L655.9 97.3 L651.6 101.2 L648.2 105.5 L645.8 109.5 L644.2 112.8 L643.3 115.5 L642.0 121.6 L641.6 124.8 L641.8 131.3 L643.3 138.7 L645.2 144.0 L647.2 147.5 L649.2 150.3 L651.8 153.3 L656.7 157.5 L660.1 159.6 L660.6 160.3 L660.4 160.8 L659.9 161.1 L656.0 162.8 L651.7 165.3 L646.4 169.4 L644.3 171.9 L642.0 175.3 L641.0 177.2 L640.0 180.4 L639.8 185.3 L640.2 187.8 L641.0 190.2 L642.0 192.1 L644.4 195.4 L646.9 197.6 L649.8 199.4 L655.2 201.6 L658.9 202.3 L659.4 202.9 L659.2 203.5 L658.5 204.1 L653.7 206.2 L648.0 209.3 L643.8 212.2 L640.6 214.8 L638.2 217.8 L637.2 219.4 L636.1 222.0 L635.3 224.7 L635.0 227.8 L635.2 231.4 L636.0 234.4 L637.3 237.2 L639.3 240.1 L641.4 242.2 L643.6 244.0 L647.6 246.4 L650.1 247.6 L656.6 249.6 L664.0 251.1 L670.1 251.8 L679.7 252.0 L686.5 251.6 L692.8 250.7 L698.0 249.6 L701.9 248.6 L707.8 246.5 L715.2 242.6 L718.8 240.3 L722.9 237.2 L726.4 233.6 L729.6 229.6 L732.4 224.8 L733.5 222.6 L734.4 219.9 L735.4 215.3 L735.8 208.5 L735.4 204.0 L734.4 200.1 L732.6 196.5 L729.9 192.9 L727.7 191.0 L725.6 189.7 L722.9 188.2 L717.7 186.2 L713.5 185.2 L706.9 184.2 L697.5 183.5 L671.0 183.1 L664.2 182.6 L661.2 181.8 L658.4 180.5 L657.1 179.6 L655.8 177.8 L655.3 176.0 L655.3 174.3 L656.1 171.0 L657.8 168.4 L661.0 165.1 L664.7 162.8 L666.2 162.7 L672.5 164.6 L679.9 165.9 L687.2 166.1 L692.6 165.5 L697.2 164.6 L700.8 163.6 L705.7 161.7 L707.9 160.7 L711.9 158.2 L715.6 155.1 L718.1 152.5 L722.5 146.6 L724.5 142.5 L725.5 139.6 L726.4 136.3 L727.3 128.6 L727.1 124.0 L726.6 119.9 L725.7 115.9 L724.4 111.8 L722.5 107.9 L719.2 103.3 L716.0 99.6 L713.2 97.4 L712.9 96.9 L712.9 96.3 L713.6 95.6 L715.2 94.8 L719.2 94.0 L727.8 93.8 L734.7 94.8 L736.3 94.5 L736.6 93.7 L736.8 83.8 L737.3 79.0 L737.1 78.4Z  M654.0 218.7 L655.2 214.5 L656.9 210.9 L660.1 207.2 L663.2 204.2 L664.5 203.3 L667.4 203.1 L699.1 203.8 L702.1 204.0 L709.3 205.2 L713.9 206.8 L717.1 208.8 L718.8 210.7 L719.9 212.9 L720.9 216.2 L721.1 220.8 L720.9 223.7 L719.8 227.3 L718.8 229.8 L716.5 233.2 L714.3 235.6 L712.8 236.9 L708.4 239.9 L706.8 240.8 L701.9 242.7 L697.3 243.9 L689.4 244.9 L682.1 245.0 L677.6 244.5 L673.3 243.7 L669.7 242.7 L667.1 241.7 L664.1 240.1 L659.6 236.6 L656.8 233.4 L654.9 229.5 L654.1 226.8 L653.8 223.9Z  M683.6 93.6 L688.4 94.0 L691.3 95.0 L695.0 97.5 L697.9 100.9 L699.8 104.1 L700.9 106.7 L702.8 112.3 L703.7 117.8 L704.5 124.9 L704.5 128.2 L703.9 135.7 L702.9 141.9 L700.9 148.4 L699.4 151.5 L696.6 155.6 L693.1 158.5 L690.4 159.9 L687.4 160.7 L685.1 161.0 L682.2 160.7 L678.3 159.6 L673.3 156.4 L670.9 153.5 L669.0 150.3 L668.0 148.0 L666.0 141.8 L664.8 135.6 L664.1 126.9 L664.7 118.5 L665.9 111.7 L667.7 106.1 L669.0 103.3 L670.3 101.1 L672.5 98.4 L675.5 96.0 L677.4 95.0 L679.8 94.2Z","cx":686.2},{"ch":"o","d":"M791.8 89.0 L782.4 91.2 L777.0 93.4 L773.1 95.3 L769.2 97.9 L764.6 101.4 L759.3 107.1 L756.1 111.5 L753.1 116.6 L751.3 120.8 L749.1 126.6 L748.0 130.8 L747.0 137.0 L746.6 141.9 L746.6 150.2 L747.2 156.7 L748.2 162.3 L749.2 165.9 L751.2 171.7 L753.3 176.2 L757.0 182.6 L759.0 185.5 L763.1 190.0 L767.8 193.9 L770.4 195.7 L777.2 199.4 L782.7 201.6 L786.3 202.6 L793.1 203.7 L799.3 204.1 L809.4 203.6 L814.9 202.4 L818.5 201.4 L823.1 199.5 L828.8 196.5 L831.7 194.6 L836.5 190.9 L839.1 188.3 L842.5 184.0 L846.6 177.4 L849.6 171.3 L851.4 166.1 L852.6 161.5 L853.6 156.0 L854.3 146.9 L853.9 139.4 L853.5 135.9 L852.6 130.3 L851.6 126.4 L850.3 122.5 L847.5 116.0 L845.6 112.5 L841.9 107.3 L839.9 104.9 L835.8 100.9 L834.1 99.5 L827.8 95.2 L824.0 93.2 L819.2 91.2 L811.3 89.2 L804.6 88.5 L797.6 88.5Z  M798.6 93.6 L801.9 93.6 L804.7 94.0 L808.0 95.0 L810.8 96.3 L814.9 99.4 L816.7 101.3 L819.7 105.0 L821.9 109.1 L823.7 113.4 L826.5 122.2 L827.9 129.3 L828.9 139.9 L828.9 153.2 L827.7 164.7 L825.8 173.9 L821.9 184.0 L820.6 186.4 L818.4 189.6 L816.4 192.0 L813.0 195.1 L810.6 196.6 L808.1 197.7 L805.1 198.6 L802.6 198.9 L798.9 198.9 L796.4 198.6 L793.4 197.8 L790.6 196.5 L787.9 194.9 L784.7 192.2 L781.0 187.4 L778.4 182.8 L777.0 179.7 L774.9 173.6 L772.8 163.8 L772.0 156.4 L771.5 148.7 L771.5 139.3 L771.8 133.1 L772.7 126.8 L775.0 117.1 L776.0 113.8 L777.8 109.6 L780.9 104.2 L782.5 102.2 L785.2 99.3 L787.8 97.4 L789.6 96.2 L792.4 94.9 L796.0 93.8Z ","cx":800.5},{"ch":"n","d":"M957.0 95.4 L952.1 92.2 L949.8 91.1 L946.6 90.0 L942.6 89.2 L938.5 88.8 L933.5 88.8 L929.9 89.2 L925.0 90.1 L921.4 91.2 L916.9 93.1 L913.0 95.1 L909.6 97.3 L904.4 101.5 L901.8 104.1 L901.0 104.5 L900.5 104.4 L900.3 103.8 L900.1 89.9 L899.5 89.2 L897.2 89.1 L896.0 89.3 L883.5 93.7 L871.3 97.3 L868.4 98.4 L867.4 99.1 L867.1 100.2 L867.5 101.0 L870.0 102.1 L872.7 103.9 L874.3 105.5 L875.6 107.6 L876.9 111.8 L877.5 117.9 L877.5 175.9 L877.3 183.2 L876.9 187.3 L876.6 188.9 L874.7 194.1 L873.5 195.9 L872.3 197.1 L868.3 199.4 L867.9 200.5 L868.3 201.6 L869.5 201.8 L909.1 201.5 L909.6 201.2 L909.8 200.3 L909.5 199.4 L907.5 198.6 L906.0 197.6 L904.0 195.8 L903.0 194.3 L902.0 192.0 L901.0 188.1 L900.6 184.9 L900.3 177.1 L900.3 111.8 L900.9 110.7 L902.5 109.1 L905.6 106.9 L910.7 104.0 L913.3 102.8 L918.8 101.0 L923.9 100.5 L927.3 100.5 L930.7 101.1 L934.9 103.0 L937.7 105.0 L939.1 106.5 L940.6 108.5 L941.7 110.7 L942.7 113.6 L943.8 119.2 L944.3 127.0 L944.3 177.0 L943.9 185.2 L942.8 191.1 L941.7 194.0 L940.5 195.8 L938.6 197.6 L935.4 199.4 L935.0 200.2 L935.1 201.1 L935.5 201.5 L936.7 201.7 L975.3 201.8 L976.1 201.5 L976.4 200.3 L976.0 199.2 L973.7 198.2 L972.0 196.9 L970.0 194.4 L968.8 191.9 L968.0 188.9 L967.5 185.4 L967.1 175.6 L967.1 122.2 L966.6 115.8 L965.9 111.4 L964.4 106.4 L962.6 102.4 L960.6 99.3Z ","cx":921.8},{"ch":"i","d":"M1020.4 88.9 L1019.5 88.8 L1016.3 89.3 L1007.1 92.7 L995.0 96.6 L992.9 97.1 L989.3 98.2 L988.6 98.7 L988.3 99.3 L988.3 100.2 L988.8 101.1 L991.0 102.2 L994.1 104.3 L995.8 106.2 L996.9 108.4 L997.7 111.1 L998.5 117.1 L998.5 176.5 L998.3 184.1 L997.7 188.6 L996.3 192.9 L994.9 195.4 L994.0 196.4 L991.8 198.2 L989.4 199.6 L989.1 200.8 L989.3 201.3 L989.8 201.6 L1028.8 201.6 L1029.8 201.5 L1030.4 200.8 L1030.4 199.9 L1030.1 199.3 L1027.1 197.9 L1025.2 196.0 L1023.9 194.2 L1023.1 192.5 L1022.1 189.6 L1021.3 183.6 L1021.1 179.0 L1021.2 90.0 L1021.1 89.4Z ","cx":1009.4},{"ch":"c","d":"M1106.3 89.2 L1097.0 88.5 L1086.3 89.3 L1081.7 90.3 L1075.9 92.2 L1069.7 95.2 L1065.6 98.0 L1061.8 101.1 L1057.2 105.7 L1054.1 109.7 L1051.5 113.7 L1048.3 120.0 L1046.2 125.1 L1045.1 129.4 L1043.8 137.2 L1043.3 143.3 L1043.3 150.0 L1043.8 155.7 L1044.9 161.6 L1046.2 167.1 L1048.2 172.6 L1051.0 178.8 L1053.8 183.3 L1057.3 187.8 L1062.1 192.4 L1066.1 195.7 L1072.7 199.7 L1077.6 201.6 L1081.8 202.7 L1089.0 203.8 L1097.4 203.8 L1105.5 202.5 L1108.2 201.7 L1111.1 200.6 L1114.6 198.8 L1119.0 195.7 L1123.4 191.9 L1128.5 185.7 L1132.4 179.0 L1134.5 174.2 L1135.9 170.1 L1135.8 169.2 L1135.3 168.9 L1133.2 168.4 L1132.4 168.6 L1129.8 173.5 L1126.3 178.1 L1122.4 181.6 L1117.4 184.8 L1111.9 186.7 L1107.9 187.6 L1105.7 187.8 L1100.1 187.6 L1094.8 186.7 L1091.2 185.7 L1088.6 184.7 L1085.3 182.9 L1081.6 179.9 L1078.0 176.1 L1075.0 172.0 L1073.0 168.5 L1070.2 161.6 L1068.9 157.5 L1068.0 152.5 L1067.0 142.0 L1067.1 133.4 L1068.0 125.1 L1070.0 116.6 L1073.0 109.1 L1076.0 104.4 L1078.3 101.3 L1080.4 99.2 L1082.1 97.8 L1085.0 96.0 L1087.6 94.8 L1090.6 94.0 L1093.7 93.6 L1096.4 93.6 L1099.9 94.1 L1102.2 95.0 L1104.3 96.2 L1106.4 97.7 L1108.0 99.4 L1111.8 105.2 L1113.5 109.1 L1114.7 112.6 L1116.3 119.6 L1116.9 120.6 L1117.7 121.1 L1119.7 121.1 L1122.5 120.7 L1126.0 119.4 L1129.0 117.9 L1131.1 116.5 L1133.3 114.1 L1133.7 113.0 L1133.9 111.4 L1133.7 109.2 L1133.2 107.4 L1132.5 105.7 L1130.0 101.7 L1127.1 98.6 L1122.5 95.1 L1118.7 93.1 L1111.5 90.3Z ","cx":1089.6}],"mark":"M 520 215 C 379 215 265 360 265 540 C 265 720 386 865 535 865 C 640 865 722 800 762 688 C 722 765 642 798 562 798 C 478 798 410 682 410 540 C 410 388 472 262 548 262 C 622 262 664 322 684 392 C 686 400 692 404 702 404 C 742 404 790 386 790 352 C 780 268 660 215 520 215 Z"};
+const box=document.getElementById('intro'),cv=box.querySelector('canvas'),ctx=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const N='#0B0D12',C='#F2EDE3',A='#E8A33D';
+const G=D.g.map(g=>({...g,p:new Path2D(g.d)})),M=new Path2D(D.mark);
+let W,H,u,sw,t0=0,raf=0;
+const ease=x=>x<=0?0:x>=1?1:x<.5?4*x*x*x:1-((-2*x+2)**3)/2;
+const cl=(a,b,x)=>Math.min(1,Math.max(0,(x-a)/(b-a)));
+const mix=(a,b,t)=>a+(b-a)*t;
+/* elipse da órbita, parametrizada por comprimento de arco */
+const RX=460,RY=120,ROT=-28*Math.PI/180,TAB=[];let LEN=0;
+{let px=RX,py=0;for(let i=0;i<=720;i++){const th=i/720*Math.PI*2,x=RX*Math.cos(th),y=RY*Math.sin(th);LEN+=Math.hypot(x-px,y-py);TAB.push([LEN,th]);px=x;py=y}}
+const thAt=s=>{s=((s%LEN)+LEN)%LEN;let lo=0,hi=TAB.length-1;while(lo<hi){const m=(lo+hi)>>1;if(TAB[m][0]<s)lo=m+1;else hi=m}return TAB[lo][1]};
+let seed=11;const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+const scatter=G.map(()=>({a:rnd()*Math.PI*2,r:.55+rnd()*.35,tilt:(rnd()-.5)*90}));
+const dust=Array.from({length:150},()=>({a:rnd()*Math.PI*2,r:.3+rnd()*.7,k:rnd(),s:rnd()*1.6+.6}));
+function size(){const dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);u=Math.min(W,H)/1000*(W<700?1.05:.82);sw=Math.min(W*.84,1040)/1116}
+function glyph(g,x,y,s,rot,al,col){ctx.save();ctx.globalAlpha=al;ctx.translate(x,y);ctx.rotate(rot*Math.PI/180);ctx.scale(s,s);ctx.translate(-g.cx,-145);ctx.fillStyle=col;ctx.fill(g.p,'evenodd');ctx.restore()}
+function draw(t){
+ const mk=ease(cl(.05,1.0,t)),p1=ease(cl(.7,1.9,t)),p3=ease(cl(2.9,3.9,t)),dot=cl(3.75,4.15,t),ai=cl(3.9,4.3,t);
+ const cx=W/2,cy=H/2,big=Math.max(W,H);
+ ctx.globalAlpha=1;ctx.fillStyle=N;ctx.fillRect(0,0,W,H);
+ /* poeira: espalhada, depois no anel, depois some */
+ for(const d of dust){const th=d.a+t*.25*(1-p3);const sx=cx+Math.cos(d.a)*d.r*big*.6,sy=cy+Math.sin(d.a)*d.r*big*.6;
+  const x=RX*Math.cos(th)*(1+d.k*.08),y=RY*Math.sin(th)*(1+d.k*.3);const ox=cx+(x*Math.cos(ROT)-y*Math.sin(ROT))*u,oy=cy+(x*Math.sin(ROT)+y*Math.cos(ROT))*u;
+  ctx.globalAlpha=(.25+.45*d.k)*Math.min(1,t*2)*(1-p3);ctx.fillStyle=d.k>.7?A:C;ctx.fillRect(mix(sx,ox,p1),mix(sy,oy,p1),d.s,d.s)}
+ ctx.globalAlpha=1;
+ const spin=t*LEN*.11,items=[];
+ G.forEach((g,i)=>{const fx=cx+(g.cx-578)*sw,fy=cy;
+  if(i===0){items.push({g,x:fx,y:fy,s:sw,r:0,al:p3,front:true});return}
+  const k=i-1,th=thAt(LEN*.27-k*LEN/9-spin),x=RX*Math.cos(th),y=RY*Math.sin(th),depth=(Math.sin(th)+1)/2;
+  const ox=cx+(x*Math.cos(ROT)-y*Math.sin(ROT))*u,oy=cy+(x*Math.sin(ROT)+y*Math.cos(ROT))*u,os=.6*u*(.75+.35*depth),oal=.4+.6*depth;
+  const sc=scatter[i],sx=cx+Math.cos(sc.a)*sc.r*big*.7,sy=cy+Math.sin(sc.a)*sc.r*big*.7;
+  items.push({g,x:mix(mix(sx,ox,p1),fx,p3),y:mix(mix(sy,oy,p1),fy,p3),s:mix(mix(.3*u,os,p1),sw,p3),r:mix(mix(sc.tilt,-16,p1),0,p3),al:mix(mix(0,oal,p1),1,p3),front:p3>.5||Math.sin(th)>0})});
+ const ring=front=>{const ra=mk*(1-p3);if(ra<=0)return;ctx.save();ctx.translate(cx,cy);ctx.rotate(ROT);ctx.beginPath();ctx.ellipse(0,0,RX*u,RY*u,0,front?0:Math.PI,front?Math.PI:2*Math.PI);
+  if(front){ctx.strokeStyle=N;ctx.lineWidth=26*u;ctx.globalAlpha=ra;ctx.stroke()}ctx.strokeStyle=A;ctx.lineWidth=9*u;ctx.globalAlpha=ra*(front?1:.5);ctx.stroke();ctx.restore()};
+ const col=g=>g.ch==='i'&&p3<.5?A:C;
+ for(const it of items)if(!it.front&&it.al>0)glyph(it.g,it.x,it.y,it.s,it.r,it.al,col(it.g));
+ ring(false);
+ /* o C grande entra no centro e depois encolhe até virar o primeiro c */
+ const c0=items[0],ms0=.82*u,msF=sw*115/560;
+ const mcx=mix(cx,c0.x,p3),mcy=mix(cy,c0.y-6*sw,p3),msc=mix(ms0*mix(.15,1,mk),msF,p3);
+ ctx.save();ctx.globalAlpha=Math.min(1,mk*1.6)*(1-p3);ctx.translate(mcx,mcy);ctx.scale(msc,msc);ctx.translate(-530,-545);ctx.fillStyle=C;ctx.fill(M);ctx.restore();
+ ring(true);
+ for(const it of items)if(it.front&&it.al>0)glyph(it.g,it.x,it.y,it.s,it.r,it.al,col(it.g));
+ /* pingo âmbar do i e o AI */
+ if(dot>0){const r=17*sw*(dot<.7?dot/.7*1.25:mix(1.25,1,(dot-.7)/.3));ctx.globalAlpha=1;ctx.fillStyle=A;ctx.beginPath();ctx.arc(cx+(1009.4-578)*sw,cy+(58-145)*sw,r,0,7);ctx.fill()}
+ if(ai>0){ctx.globalAlpha=ai;ctx.fillStyle=A;ctx.font=`600 ${Math.max(10,Math.round(44*sw))}px Sora, Inter, sans-serif`;ctx.textBaseline='alphabetic';const bx=cx+(1136-578)*sw+22*sw,by=cy+(202-145)*sw;ctx.fillText('A',bx,by);ctx.fillText('I',bx+ctx.measureText('A').width+12*sw,by)}
+ /* barra de carregamento: 2 s enquanto as letras orbitam */
+ const bin=cl(.7,.9,t),bout=cl(2.9,3.2,t),ba=bin*(1-bout);
+ if(ba>0){const bw=Math.min(260,W*.5),bh=3,bx=cx-bw/2,by=Math.min(H-48,cy+420*u);
+  ctx.globalAlpha=ba;ctx.fillStyle='rgba(242,237,227,.14)';ctx.beginPath();ctx.roundRect(bx,by,bw,bh,bh/2);ctx.fill();
+  const f=ease(cl(.9,2.9,t));if(f>0){ctx.fillStyle='rgba(242,237,227,.7)';ctx.beginPath();ctx.roundRect(bx,by,Math.max(bh,bw*f),bh,bh/2);ctx.fill()}}
+ ctx.globalAlpha=1;
+}
+function frame(ms){
+ if(!t0)t0=ms;const t=(ms-t0)/1000;draw(t);
+ const out=cl(4.7,5.3,t);box.style.opacity=1-out;
+ if(out>=1){finish();return}
+ raf=requestAnimationFrame(frame);
+}
+function finish(){cancelAnimationFrame(raf);box.style.opacity=0;document.documentElement.style.overflow='';setTimeout(()=>{box.hidden=true},620);try{sessionStorage.setItem('cg-intro','1')}catch(e){}}
+function skip(){if(!box.hidden)t0=performance.now()-4700}
+function play(){if(still)return;t0=0;box.hidden=false;box.style.opacity=1;document.documentElement.style.overflow='hidden';size();raf=requestAnimationFrame(frame)}
+window.__introDraw=(t)=>{size();draw(t)};
+addEventListener('keydown',e=>{if(!box.hidden&&(e.key==='Escape'||e.key===' '||e.key==='Enter'))skip()});
+addEventListener('resize',()=>{if(!box.hidden)size()});
+let seen=false;try{seen=sessionStorage.getItem('cg-intro')==='1'}catch(e){}
+if(!seen)play();
+const rp=document.getElementById('replay');if(rp)rp.addEventListener('click',()=>{scrollTo(0,0);play()});
+}
+
+</script>
+<script>{const b=document.querySelector('.brand'),f=()=>b.classList.toggle('compact',scrollY>80);addEventListener('scroll',f,{passive:true});f()}</script>
+</body>
+</html>
